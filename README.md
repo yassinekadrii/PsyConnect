@@ -183,3 +183,6 @@ Pour toute question ou problème, contactez l'équipe de développement.
 ---
 
 **PsyConnect** - Votre bien-être mental, notre priorité 💜
+
+---
+*Made with ❤️ by **Yassine Kadri***
