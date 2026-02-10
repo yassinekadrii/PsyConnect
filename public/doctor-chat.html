@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Patients - PsyConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/i18n.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --chat-bg: #e0e7ff;
+            --my-msg-bg: #6366f1;
+            --their-msg-bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            height: 70px;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar - Patient List */
+        .sidebar {
+            width: 350px;
+            background: var(--white);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-bar {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-light);
+        }
+
+        .patient-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .patient-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .patient-item:hover,
+        .patient-item.active {
+            background: var(--bg-light);
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-right: 1rem;
+            object-fit: cover;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .last-msg {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .msg-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .chat-header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .video-call-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .video-call-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background-color: #f0f2f5;
+            /* WhatsApp-like bg */
+            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
+            opacity: 0.9;
+        }
+
+        .message {
+            max-width: 60%;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .message.received {
+            background: var(--white);
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-right: auto;
+        }
+
+        .message.sent {
+            background: #dcf8c6;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-left: auto;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+            float: right;
+            margin-left: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .input-area {
+            padding: 1rem 2rem;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .msg-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .no-chat-selected {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            background: #f0f2f5;
+        }
+
+        .no-chat-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">PsyConnect</a>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <div>
+                <button class="lang-btn" onclick="toggleLanguage()" id="langSwitcher"
+                    style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
+            </div>
+            <div style="display: flex; gap: 1.5rem; align-items: center;">
+                <a href="index.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500;"
+                    data-i18n="nav.accueil">Accueil</a>
+                <a href="profile.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500;"
+                    data-i18n="nav.profile">Profil</a>
+                <button onclick="logout()"
+                    style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer;"
+                    data-i18n="nav.logout">Déconnexion</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Rechercher un patient..."
+                    data-i18n="chat.sidebar.search">
+            </div>
+            <div class="patient-list" id="patientList">
+                <div style="padding: 1rem; color: var(--text-light); text-align: center;">Chargement des discussions...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area" id="chatArea">
+            <div class="chat-header">
+                <div class="header-info">
+                    <img src="https://ui-avatars.com/api/?name=Patient&background=random" alt="Patient" class="avatar"
+                        id="currentAvatar" style="opacity: 0.5;">
+                    <div>
+                        <h3 id="chatPatientName">Sélectionnez un patient</h3>
+                        <span style="color: var(--text-light); font-size: 0.85rem;">En attente...</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button id="prescriptionBtn" onclick="openPrescriptionModal()"
+                        style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📜</span> <span data-i18n="chat.header.add_prescription">Ordonnance</span>
+                    </button>
+                    <button class="video-call-btn" onclick="startVideoCall()">
+                        📹 Appel Vidéo
+                    </button>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <div class="no-chat-selected">
+                    <div class="no-chat-icon">💬</div>
+                    <h3>Sélectionnez un patient</h3>
+                    <p>Choisissez une conversation dans la liste pour voir les messages.</p>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" class="msg-input" placeholder="Écrivez un message..." id="messageInput"
+                    onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Call Modal -->
+    <div id="videoModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;">
+        <div
+            style="position: relative; width: 80%; max-width: 800px; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <video id="remoteVideo" autoplay playsinline
+                style="width: 100%; height: 100%; object-fit: cover; background: #222;"></video>
+            <video id="localVideo" autoplay playsinline muted
+                style="position: absolute; bottom: 20px; right: 20px; width: 160px; height: 90px; object-fit: cover; border: 2px solid white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); background: #333;"></video>
+            <div
+                style="position: absolute; bottom: 20px; left: 20px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">
+                En attente de connexion...
+            </div>
+        </div>
+        <button onclick="endCall()"
+            style="margin-top: 2rem; background: #ef4444; color: white; padding: 1rem 2rem; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: 600; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); transition: transform 0.2s; display: flex; align-items: center; gap: 0.5rem;">
+            <span>❌</span> Raccrocher
+        </button>
+    </div>
+
+    <!-- Prescription Modal -->
+    <div id="prescriptionModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center;">
+        <div
+            style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="margin-bottom: 1.5rem; color: var(--text-dark);"><span data-i18n="chat.prescription.title">📜
+                    Nouvelle Ordonnance</span></h2>
+            <div id="medicinesList">
+                <div class="medicine-item"
+                    style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" placeholder="Médicament" data-i18n="chat.prescription.medicine_name"
+                            style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <input type="text" placeholder="Dosage" data-i18n="chat.prescription.dosage"
+                            style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <input type="text" placeholder="Durée" data-i18n="chat.prescription.duration"
+                            style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <input type="text" placeholder="Notes (ex: matin et soir, après le repas)"
+                        data-i18n="chat.prescription.notes"
+                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                </div>
+            </div>
+            <button onclick="addMedicineRow()"
+                style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 500; margin-bottom: 1rem; padding: 0.5rem 0;">+
+                <span data-i18n="chat.prescription.add_medicine">Ajouter un médicament</span></button>
+            <textarea id="prescriptionInstructions" placeholder="Instructions supplémentaires (optionnel)"
+                data-i18n="chat.prescription.instructions"
+                style="width: 100%; height: 80px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 1.5rem;"></textarea>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button onclick="closePrescriptionModal()"
+                    style="padding: 0.75rem 1.5rem; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer;"
+                    data-i18n="nav.accueil">Annuler</button>
+                <button onclick="submitPrescription()"
+                    style="padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                    data-i18n="chat.prescription.save">Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/webrtc.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const API_URL = 'http://localhost:3001/api';
+        let currentPatientId = null;
+
+        if (!token || user.role !== 'doctor') {
+            window.location.href = 'login.html';
+        }
+
+        // ... (fetchConversations, setInterval same as before) ...
+        // Fetch conversations/patients on load
+        fetchConversations();
+
+        // Poll for new messages every 3 seconds
+        setInterval(() => {
+            if (currentPatientId) loadMessages(currentPatientId);
+            fetchConversations(); // Also refresh sidebar to show new msgs
+        }, 3000);
+
+        async function fetchConversations() {
+            try {
+                const response = await fetch(`${API_URL}/messages/conversations`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const list = document.getElementById('patientList');
+                    list.innerHTML = '';
+
+                    data.conversations.forEach(conv => {
+                        const div = document.createElement('div');
+                        div.className = `patient-item ${currentPatientId === conv.user._id ? 'active' : ''}`;
+                        div.onclick = () => selectPatient(conv.user);
+
+                        div.innerHTML = `
+                            <img src="https://ui-avatars.com/api/?name=${conv.user.firstName}+${conv.user.lastName}&background=random" alt="Patient" class="avatar">
+                            <div class="patient-info">
+                                <div class="patient-name">${conv.user.firstName} ${conv.user.lastName}</div>
+                                <div class="last-msg">${conv.lastMessage.substring(0, 30)}${conv.lastMessage.length > 30 ? '...' : ''}</div>
+                                <div class="msg-time">${new Date(conv.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching conversations:', error);
+            }
+        }
+
+        function selectPatient(patient) {
+            currentPatientId = patient._id;
+
+            // Update Header
+            document.getElementById('chatPatientName').textContent = `${patient.firstName} ${patient.lastName}`;
+            document.getElementById('currentAvatar').src = `https://ui-avatars.com/api/?name=${patient.firstName}+${patient.lastName}&background=random`; // Fixed ID here
+
+            // Update UI active state
+            fetchConversations(); // Re-render list to show active state
+
+            // Load messages
+            loadMessages(patient._id);
+
+            // Clear input
+            document.getElementById('messageInput').value = '';
+            document.getElementById('messageInput').focus();
+        }
+
+        async function loadMessages(patientId) {
+            try {
+                const response = await fetch(`${API_URL}/messages/${patientId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('messagesContainer');
+                    const wasAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
+
+                    container.innerHTML = '';
+
+                    data.messages.forEach(msg => {
+                        const div = document.createElement('div');
+                        // Fix for user.id logic - assuming user._id is present
+                        const userId = user.id || user._id;
+                        div.className = `message ${msg.sender === userId ? 'sent' : 'received'}`;
+                        div.textContent = msg.content;
+                        container.appendChild(div);
+                    });
+
+                    // Maintain scroll position if user is reading up, else scroll to bottom
+                    // For simplicity, just scroll to bottom for now as it's a chat
+                    container.scrollTop = container.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+
+            if (content && currentPatientId) {
+                try {
+                    const response = await fetch(`${API_URL}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            receiverId: currentPatientId,
+                            content
+                        })
+                    });
+
+                    if (response.ok) {
+                        input.value = '';
+                        loadMessages(currentPatientId);
+                    }
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    alert('Erreur lors de l\'envoi du message');
+                }
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function startVideoCall() {
+            if (!currentPatientId) {
+                alert('Veuillez d\'abord sélectionner un patient.');
+                return;
+            }
+
+            const userId = user.id || user._id;
+            // Create a unique room ID based on participants
+            const participants = [userId, currentPatientId].sort();
+            const roomId = participants.join('-');
+
+            startVideoCallSession(roomId, userId);
+        }
+
+        function endCall() {
+            endCallSession();
+        }
+
+        // Prescription Functions
+        function openPrescriptionModal() {
+            if (!currentPatientId) {
+                alert('Veuillez sélectionner un patient.');
+                return;
+            }
+            document.getElementById('prescriptionModal').style.display = 'flex';
+        }
+
+        function closePrescriptionModal() {
+            document.getElementById('prescriptionModal').style.display = 'none';
+            // Clear inputs
+            document.getElementById('medicinesList').innerHTML = `
+                <div class="medicine-item" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" placeholder="Médicament" style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <input type="text" placeholder="Dosage" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <input type="text" placeholder="Durée" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <input type="text" placeholder="Notes (ex: matin et soir, après le repas)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                </div>
+            `;
+            document.getElementById('prescriptionInstructions').value = '';
+        }
+
+        function addMedicineRow() {
+            const row = document.createElement('div');
+            row.className = 'medicine-item';
+            row.style = 'display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;';
+            row.innerHTML = `
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" placeholder="Médicament" style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <input type="text" placeholder="Dosage" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    <input type="text" placeholder="Durée" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                </div>
+                <input type="text" placeholder="Notes (ex: matin et soir, après le repas)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+            `;
+            document.getElementById('medicinesList').appendChild(row);
+        }
+
+        async function submitPrescription() {
+            const medicines = [];
+            document.querySelectorAll('.medicine-item').forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                if (inputs[0].value) {
+                    medicines.push({
+                        name: inputs[0].value,
+                        dosage: inputs[1].value,
+                        duration: inputs[2].value,
+                        notes: inputs[3].value
+                    });
+                }
+            });
+
+            if (medicines.length === 0) {
+                alert('Veuillez ajouter au moins un médicament.');
+                return;
+            }
+
+            const instructions = document.getElementById('prescriptionInstructions').value;
+
+            try {
+                const response = await fetch(`${API_URL}/prescriptions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        patientId: currentPatientId,
+                        medicines,
+                        instructions
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    alert('Ordonnance envoyée avec succès !');
+                    closePrescriptionModal();
+
+                    // Notify patient via message
+                    await fetch(`${API_URL}/messages`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            receiverId: currentPatientId,
+                            content: "📜 Je vous ai envoyé une nouvelle ordonnance. Vous pouvez la consulter dans votre espace."
+                        })
+                    });
+                    loadMessages(currentPatientId);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error submitting prescription:', error);
+                alert('Erreur lors de l\'envoi de l\'ordonnance.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

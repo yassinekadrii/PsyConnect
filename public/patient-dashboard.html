@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trouver un Médecin - PsyConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .navbar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-light);
+        }
+
+        .doctors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .doctor-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doctor-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+
+        .doctor-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .doctor-specialty {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .doctor-bio {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .btn-contact {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-contact:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">PsyConnect</a>
+        <div id="userMenu">
+            <button onclick="logout()"
+                style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer;">Déconnexion</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Nos Spécialistes</h1>
+            <p>Trouvez le psychologue qui vous correspond et commencez votre parcours de bien-être.</p>
+        </div>
+
+        <div class="doctors-grid" id="doctorsGrid">
+            <!-- Doctors will be loaded here -->
+            <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Chargement des médecins...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+
+        // Check auth
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            // Optional: redirect to login or show simplified view
+            document.getElementById('userMenu').innerHTML = `
+                <a href="login.html" style="text-decoration: none; color: var(--primary-color); font-weight: 600; margin-right: 1rem;">Connexion</a>
+                <a href="register.html" style="text-decoration: none; background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 6px;">S'inscrire</a>
+            `;
+        } else {
+            document.getElementById('userMenu').innerHTML = `
+                <a href="profile.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500; margin-right: 1rem;">Mon Profil</a>
+                <span style="margin-right: 1rem;">Bonjour, ${user.firstName}</span>
+                <button onclick="logout()" style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer;">Déconnexion</button>
+            `;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        async function fetchDoctors() {
+            try {
+                const response = await fetch(`${API_URL}/patient/doctors`);
+                const data = await response.json();
+
+                const grid = document.getElementById('doctorsGrid');
+
+                if (data.success && data.doctors.length > 0) {
+                    grid.innerHTML = data.doctors.map(doc => `
+                        <div class="doctor-card">
+                            <img src="https://ui-avatars.com/api/?name=${doc.firstName}+${doc.lastName}&background=6366f1&color=fff" alt="${doc.firstName}" class="doctor-avatar">
+                            <h3 class="doctor-name">Dr. ${doc.firstName} ${doc.lastName}</h3>
+                            <div class="doctor-specialty">Psychologue Clinicien</div>
+                            <p class="doctor-bio">Spécialiste en thérapie cognitive et comportementale. Accompagnement bienveillant pour anxiété et dépression.</p>
+                            <button onclick="contactDoctor('${doc._id}', '${doc.firstName} ${doc.lastName}')" class="btn-contact">Contacter</button>
+                        </div>
+                    `).join('');
+                } else {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun médecin disponible pour le moment.</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('doctorsGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Erreur de chargement.</p>';
+            }
+        }
+
+        function contactDoctor(id, name) {
+            if (!token) {
+                alert('Veuillez vous connecter pour contacter un médecin.');
+                window.location.href = 'login.html';
+                return;
+            }
+            // Logic to open chat with this doctor
+            // Store selected doctor in localStorage or pass as query param
+            localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
+            window.location.href = 'patient-chat.html';
+        }
+
+        fetchDoctors();
+    </script>
+</body>
+
+</html>

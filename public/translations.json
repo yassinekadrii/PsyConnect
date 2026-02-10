@@ -1,0 +1,368 @@
+{
+    "en": {
+        "nav": {
+            "accueil": "Home",
+            "services": "Services",
+            "specialistes": "Specialists",
+            "apropos": "About",
+            "contact": "Contact",
+            "login": "Login",
+            "register": "Register",
+            "logout": "Logout",
+            "my_patients": "My Patients",
+            "dashboard": "Dashboard",
+            "profile": "Profile"
+        },
+        "hero": {
+            "title": "Your mental well-being,",
+            "title_highlight": "our priority",
+            "subtitle": "Discover a space for listening and support with qualified professionals. Consult from home, in total safety.",
+            "btn_start": "Start Consultation",
+            "btn_how": "How it works"
+        },
+        "sections": {
+            "services": "Our Services",
+            "specialists": "Our Specialists",
+            "about": "About Us"
+        },
+        "login": {
+            "title": "Welcome back!",
+            "subtitle": "Login to access your space",
+            "email": "Email address",
+            "password": "Password",
+            "remember": "Remember me",
+            "forgot": "Forgot password?",
+            "submit": "Login",
+            "no_account": "Don't have an account?",
+            "back_home": "Back to Home"
+        },
+        "register": {
+            "title": "Create an account",
+            "subtitle": "Join our wellness community",
+            "firstname": "First Name",
+            "lastname": "Last Name",
+            "email": "Email address",
+            "phone": "Phone number",
+            "password": "Password",
+            "confirm": "Confirm Password",
+            "terms": "I accept the terms and conditions",
+            "submit": "Create my account",
+            "has_account": "Already have an account?"
+        },
+        "admin": {
+            "sidebar": {
+                "dashboard": "Dashboard",
+                "doctors": "Doctors",
+                "patients": "Patients",
+                "admins": "Admins",
+                "create_doctor": "Add Doctor",
+                "create_admin": "Add Admin"
+            },
+            "stats": {
+                "title": "Platform Overview",
+                "total_users": "Total Users",
+                "total_doctors": "Total Doctors",
+                "total_patients": "Total Patients",
+                "total_prescriptions": "Total Prescriptions",
+                "total_messages": "Total Messages",
+                "recent_activity": "Recent Activity (30 days)",
+                "new_patients": "New Patients",
+                "new_doctors": "New Doctors",
+                "export_pdf": "Export PDF"
+            },
+            "tables": {
+                "name": "Name",
+                "email": "Email",
+                "phone": "Phone",
+                "role": "Role",
+                "date": "Date",
+                "actions": "Actions",
+                "delete": "Delete"
+            }
+        },
+        "chat": {
+            "sidebar": {
+                "search": "Search...",
+                "no_patients": "No patients found",
+                "no_doctors": "No doctors found"
+            },
+            "header": {
+                "video_call": "Start Video Call",
+                "add_prescription": "Add Prescription",
+                "view_prescriptions": "View Prescriptions"
+            },
+            "form": {
+                "send": "Send",
+                "placeholder": "Type your message..."
+            },
+            "prescription": {
+                "title": "Medical Prescription",
+                "add_medicine": "Add Medicine",
+                "medicine_name": "Medicine Name",
+                "dosage": "Dosage",
+                "duration": "Duration (days)",
+                "notes": "Intake Notes",
+                "instructions": "General Instructions",
+                "save": "Save Prescription",
+                "download": "Download PDF"
+            }
+        },
+        "profile": {
+            "title": "Edit Profile",
+            "firstname": "First Name",
+            "lastname": "Last Name",
+            "email": "Email address",
+            "current_password": "Current Password (required to change)",
+            "new_password": "New Password",
+            "submit": "Save Changes",
+            "back": "Back to Dashboard",
+            "success": "Profile updated successfully",
+            "error": "Error updating profile",
+            "auth_error": "Current password incorrect"
+        }
+    },
+    "fr": {
+        "nav": {
+            "accueil": "Accueil",
+            "services": "Services",
+            "specialistes": "Spécialistes",
+            "apropos": "À Propos",
+            "contact": "Contact",
+            "login": "Connexion",
+            "register": "S'inscrire",
+            "logout": "Déconnexion",
+            "my_patients": "Mes Patients",
+            "dashboard": "Dashboard",
+            "profile": "Profil"
+        },
+        "hero": {
+            "title": "Votre bien-être mental,",
+            "title_highlight": "notre priorité",
+            "subtitle": "Découvrez un espace d'écoute et de soutien avec des professionnels qualifiés. Consultez depuis chez vous, en toute sécurité.",
+            "btn_start": "Commencer ma consultation",
+            "btn_how": "Comment ça marche"
+        },
+        "sections": {
+            "services": "Nos Services",
+            "specialists": "Nos Spécialistes",
+            "about": "À Propos"
+        },
+        "login": {
+            "title": "Bon retour !",
+            "subtitle": "Connectez-vous pour accéder à votre espace",
+            "email": "Adresse email",
+            "password": "Mot de passe",
+            "remember": "Se souvenir de moi",
+            "forgot": "Mot de passe oublié ?",
+            "submit": "Se connecter",
+            "no_account": "Vous n'avez pas de compte ?",
+            "back_home": "Retour à l'accueil"
+        },
+        "register": {
+            "title": "Créer un compte",
+            "subtitle": "Rejoignez notre communauté de bien-être",
+            "firstname": "Prénom",
+            "lastname": "Nom",
+            "email": "Adresse email",
+            "phone": "Numéro de téléphone",
+            "password": "Mot de passe",
+            "confirm": "Confirmer le mot de passe",
+            "terms": "J'accepte les conditions d'utilisation",
+            "submit": "Créer mon compte",
+            "has_account": "Vous avez déjà un compte ?"
+        },
+        "admin": {
+            "sidebar": {
+                "dashboard": "Tableau de Bord",
+                "doctors": "Médecins",
+                "patients": "Patients",
+                "admins": "Administrateurs",
+                "create_doctor": "Ajouter un Médecin",
+                "create_admin": "Ajouter un Admin"
+            },
+            "stats": {
+                "title": "Vue d'ensemble",
+                "total_users": "Total Utilisateurs",
+                "total_doctors": "Total Médecins",
+                "total_patients": "Total Patients",
+                "total_prescriptions": "Total Ordonnances",
+                "total_messages": "Total Messages",
+                "recent_activity": "Activité récente (30 jours)",
+                "new_patients": "Nouveaux Patients",
+                "new_doctors": "Nouveaux Médecins",
+                "export_pdf": "Exporter PDF"
+            },
+            "tables": {
+                "name": "Nom",
+                "email": "Email",
+                "phone": "Tél",
+                "role": "Rôle",
+                "date": "Date",
+                "actions": "Actions",
+                "delete": "Supprimer"
+            }
+        },
+        "chat": {
+            "sidebar": {
+                "search": "Rechercher...",
+                "no_patients": "Aucun patient trouvé",
+                "no_doctors": "Aucun médecin trouvé"
+            },
+            "header": {
+                "video_call": "Appel Vidéo",
+                "add_prescription": "Ajouter Ordonnance",
+                "view_prescriptions": "Voir Ordonnances"
+            },
+            "form": {
+                "send": "Envoyer",
+                "placeholder": "Écrivez votre message..."
+            },
+            "prescription": {
+                "title": "Ordonnance Médicale",
+                "add_medicine": "Ajouter Médicament",
+                "medicine_name": "Nom du médicament",
+                "dosage": "Dosage",
+                "duration": "Durée (jours)",
+                "notes": "Instructions de prise",
+                "instructions": "Instructions générales",
+                "save": "Enregistrer l'ordonnance",
+                "download": "Télécharger PDF"
+            }
+        },
+        "profile": {
+            "title": "Modifier mon profil",
+            "firstname": "Prénom",
+            "lastname": "Nom",
+            "email": "Adresse email",
+            "current_password": "Mot de passe actuel (requis pour changer)",
+            "new_password": "Nouveau mot de passe",
+            "submit": "Enregistrer les modifications",
+            "back": "Retour au tableau de bord",
+            "success": "Profil mis à jour avec succès",
+            "error": "Erreur lors de la mise à jour",
+            "auth_error": "Mot de passe actuel incorrect"
+        }
+    },
+    "ar": {
+        "nav": {
+            "accueil": "الرئيسية",
+            "services": "الخدمات",
+            "specialistes": "أخصائيون",
+            "apropos": "حولنا",
+            "contact": "اتصل بنا",
+            "login": "تسجيل الدخول",
+            "register": "انضم إلينا",
+            "logout": "تسجيل الخروج",
+            "my_patients": "مرضاي",
+            "dashboard": "لوحة التحكم",
+            "profile": "الملف الشخصي"
+        },
+        "hero": {
+            "title": "صحتك النفسية،",
+            "title_highlight": "أولويتنا",
+            "subtitle": "اكتشف مساحة للاستماع والدعم مع مهنيين مؤهلين. استشر من منزلك، وفي أمان تام.",
+            "btn_start": "ابدأ استشاراتك",
+            "btn_how": "كيف يعمل؟"
+        },
+        "sections": {
+            "services": "خدماتنا",
+            "specialists": "أخصائيونا",
+            "about": "حولنا"
+        },
+        "login": {
+            "title": "مرحباً بعودتك!",
+            "subtitle": "سجل دخولك للوصول إلى مساحتك",
+            "email": "البريد الإلكتروني",
+            "password": "كلمة المرور",
+            "remember": "تذكرني",
+            "forgot": "نسيت كلمة المرور؟",
+            "submit": "تسجيل الدخول",
+            "no_account": "ليس لديك حساب؟",
+            "back_home": "العودة للرئيسية"
+        },
+        "register": {
+            "title": "إنشاء حساب",
+            "subtitle": "انضم إلى مجتمعنا للرفاهية",
+            "firstname": "الاسم الأول",
+            "lastname": "الاسم الأخير",
+            "email": "البريد الإلكتروني",
+            "phone": "رقم الهاتف",
+            "password": "كلمة المرور",
+            "confirm": "تأكيد كلمة المرور",
+            "terms": "أوافق على الشروط والأحكام",
+            "submit": "إنشاء حسابي",
+            "has_account": "لديك حساب بالفعل؟"
+        },
+        "admin": {
+            "sidebar": {
+                "dashboard": "لوحة التحكم",
+                "doctors": "الأطباء",
+                "patients": "المرضى",
+                "admins": "المدراء",
+                "create_doctor": "إضافة طبيب",
+                "create_admin": "إضافة مدير"
+            },
+            "stats": {
+                "title": "نظرة عامة",
+                "total_users": "إجمالي المستخدمين",
+                "total_doctors": "إجمالي الأطباء",
+                "total_patients": "إجمالي المرضى",
+                "total_prescriptions": "إجمالي الوصفات",
+                "total_messages": "إجمالي الرسائل",
+                "recent_activity": "النشاط الأخير (30 يوماً)",
+                "new_patients": "مرضى جدد",
+                "new_doctors": "أطباء جدد",
+                "export_pdf": "تصدير PDF"
+            },
+            "tables": {
+                "name": "الاسم",
+                "email": "البريد",
+                "phone": "الهاتف",
+                "role": "الدور",
+                "date": "التاريخ",
+                "actions": "الإجراءات",
+                "delete": "حذف"
+            }
+        },
+        "chat": {
+            "sidebar": {
+                "search": "بحث...",
+                "no_patients": "لم يتم العثور على مرضى",
+                "no_doctors": "لم يتم العثور على أطباء"
+            },
+            "header": {
+                "video_call": "بدء مكالمة فيديو",
+                "add_prescription": "إضافة وصفة",
+                "view_prescriptions": "عرض الوصفات"
+            },
+            "form": {
+                "send": "إرسال",
+                "placeholder": "اكتب رسالتك..."
+            },
+            "prescription": {
+                "title": "وصفة طبية",
+                "add_medicine": "إضافة دواء",
+                "medicine_name": "اسم الدواء",
+                "dosage": "الجرعة",
+                "duration": "المدة (أيام)",
+                "notes": "تعليمات الاستخدام",
+                "instructions": "تعليمات عامة",
+                "save": "حفظ الوصفة",
+                "download": "تحميل PDF"
+            }
+        },
+        "profile": {
+            "title": "تعديل الملف الشخصي",
+            "firstname": "الاسم الأول",
+            "lastname": "الاسم الأخير",
+            "email": "البريد الإلكتروني",
+            "current_password": "كلمة المرور الحالية (مطلوبة للتغيير)",
+            "new_password": "كلمة المرور الجديدة",
+            "submit": "حفظ التغييرات",
+            "back": "العودة للوحة التحكم",
+            "success": "تم تحديث الملف الشخصي بنجاح",
+            "error": "خطأ في تحديث الملف الشخصي",
+            "auth_error": "كلمة المرور الحالية غير صحيحة"
+        }
+    }
+}
