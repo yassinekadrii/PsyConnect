@@ -1,3 +1,8 @@
+/**
+ * @file routes/auth.js
+ * @description Authentication routes (Registration, Login).
+ */
+
 const express = require('express');
 const { register, login } = require('../controllers/authController');
 

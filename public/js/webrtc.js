@@ -1,6 +1,12 @@
 let localStream;
 let remoteStream;
+let screenStream;
 let peerConnection;
+/**
+ * @file public/js/webrtc.js
+ * @description WebRTC implementation for video calls and real-time signaling via Socket.io.
+ */
+
 const socket = io(); // Connect to the server
 
 const rtcConfig = {
@@ -17,21 +23,33 @@ async function startVideoCallSession(roomId, currentUserId) {
         const modal = document.getElementById('videoModal');
         if (modal) modal.style.display = 'flex';
 
+        // Setup socket listeners FIRST to avoid missing incoming offers/candidates
+        setupSocketListeners(roomId);
+
+        // Join room immediately so we are ready for offers
+        console.log(`Joining room: ${roomId} as user: ${currentUserId}`);
+        socket.emit('join-room', roomId, currentUserId);
+
         // Get local stream
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const localVideo = document.getElementById('localVideo');
         if (localVideo) localVideo.srcObject = localStream;
 
-        // Join room
-        console.log(`Joining room: ${roomId} as user: ${currentUserId}`);
-        socket.emit('join-room', roomId, currentUserId);
-
-        // Setup socket listeners
-        setupSocketListeners(roomId);
+        // If someone was already there, they might have sent an offer we missed?
+        // No, we joined first, but we missed the 'user-connected' if they were already there.
+        // Actually our join-room emits 'user-connected' to others.
 
     } catch (error) {
         console.error('Error starting video call:', error);
-        alert('Impossible d\'accéder à la caméra ou au microphone.');
+        const msg = error.name === 'NotAllowedError' ?
+            'Accès caméra/micro refusé. Veuillez autoriser l\'accès.' :
+            'Impossible d\'accéder à la caméra ou au microphone.';
+
+        if (window.showNotification) {
+            showNotification(msg, 'error');
+        } else {
+            alert(msg);
+        }
         endCallSession();
     }
 }
@@ -45,6 +63,19 @@ function setupSocketListeners(roomId) {
 
     socket.on('user-connected', async (userId) => {
         console.log('User connected:', userId);
+
+        // Wait for local stream if not ready
+        let attempts = 0;
+        while (!localStream && attempts < 10) {
+            await new Promise(r => setTimeout(r, 500));
+            attempts++;
+        }
+
+        if (!localStream) {
+            console.error('Local stream still not ready after 5s');
+            return;
+        }
+
         createPeerConnection(roomId);
 
         try {
@@ -58,6 +89,20 @@ function setupSocketListeners(roomId) {
 
     socket.on('offer', async (data) => {
         console.log('Received offer');
+
+        // Wait for local stream if not ready
+        let attempts = 0;
+        while (!localStream && attempts < 10) {
+            await new Promise(r => setTimeout(r, 500));
+            attempts++;
+        }
+
+        if (!localStream) {
+            console.warn('Received offer but local stream not ready. Joining room might be needed?');
+            // If they received an offer, they must have clicked the button or have a listener.
+            return;
+        }
+
         if (!peerConnection) createPeerConnection(roomId);
 
         try {
@@ -73,11 +118,14 @@ function setupSocketListeners(roomId) {
     socket.on('answer', async (data) => {
         console.log('Received answer');
         try {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+            }
         } catch (error) {
             console.error('Error handling answer:', error);
         }
     });
+    // ... rest of the handlers ...
 
     socket.on('ice-candidate', async (data) => {
         try {
@@ -137,4 +185,59 @@ function endCallSession() {
 
     // Reload page or reset specific UI elements if needed
     // window.location.reload(); 
+    if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
+        screenStream = null;
+    }
+}
+
+async function toggleScreenShare() {
+    try {
+        if (!screenStream) {
+            // Start sharing
+            screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const screenTrack = screenStream.getVideoTracks()[0];
+
+            // Revert back when screen sharing ends (e.g., via browser stop button)
+            screenTrack.onended = () => {
+                stopScreenShare();
+            };
+
+            replaceVideoTrack(screenTrack);
+            return true; // Sharing started
+        } else {
+            // Stop sharing
+            stopScreenShare();
+            return false; // Sharing stopped
+        }
+    } catch (error) {
+        console.error('Error toggling screen share:', error);
+        return null;
+    }
+}
+
+function stopScreenShare() {
+    if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
+        screenStream = null;
+    }
+    if (localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        replaceVideoTrack(videoTrack);
+    }
+}
+
+function replaceVideoTrack(newTrack) {
+    if (peerConnection) {
+        const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) {
+            sender.replaceTrack(newTrack);
+        }
+    }
+    // Update local preview
+    const localVideo = document.getElementById('localVideo');
+    if (localVideo && localStream) {
+        const tracks = [newTrack, ...localStream.getAudioTracks()];
+        localVideo.srcObject = new MediaStream(tracks);
+    }
 }

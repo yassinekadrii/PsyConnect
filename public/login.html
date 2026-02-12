@@ -1,3 +1,12 @@
+<!-- 
+  @file public/login.html
+  @description User authentication page for PsyConnect.
+  
+  Features:
+  - Multi-language support (i18n)
+  - Role-based redirection after login
+  - Form validation and error messaging
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -357,6 +366,7 @@
         }
     </style>
     <script src="js/i18n.js"></script>
+    <script src="js/notifications.js"></script>
 </head>
 
 <body>
@@ -403,8 +413,9 @@
                 <button type="submit" class="btn-login" data-i18n="login.submit">Se connecter</button>
             </form>
 
-            <div class="register-link" data-i18n="login.no_account">
-                Vous n'avez pas de compte ? <a href="register.html">S'inscrire</a>
+            <div class="register-link">
+                <span data-i18n="login.no_account_text">Vous n'avez pas de compte ?</span> <a href="register.html"
+                    data-i18n="nav.register">S'inscrire</a>
             </div>
 
             <div class="back-home">
@@ -427,7 +438,7 @@
             }
         }
 
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -441,6 +452,7 @@
             submitBtn.textContent = 'Connexion en cours...';
 
             try {
+                console.log('Sending login request...');
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: {
@@ -449,32 +461,35 @@
                     body: JSON.stringify({ email, password })
                 });
 
+                console.log('Response received status:', response.status);
                 const data = await response.json();
+                console.log('Data received:', data);
 
                 if (data.success) {
                     // Store token
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
 
+                    showNotification(data.message || 'Connexion réussie!', 'success');
+
                     // Redirect based on role
-                    if (data.user.role === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
-                    } else if (data.user.role === 'doctor') {
-                        // Doctor -> Homepage (Navbar will change)
-                        window.location.href = 'index.html';
-                    } else {
-                        // Patient
-                        alert('Bienvenue ' + data.user.firstName + '! Le tableau de bord patient sera bientôt disponible.');
-                        window.location.href = 'index.html';
-                    }
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else if (data.user.role === 'doctor') {
+                            window.location.href = 'index.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
                 } else {
-                    alert(data.message || 'Erreur de connexion');
+                    showNotification(data.message || 'Email ou mot de passe incorrect', 'error');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Se connecter';
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                alert('Erreur de connexion au serveur. Assurez-vous que le serveur est démarré.');
+                showNotification('Erreur de connexion au serveur.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Se connecter';
             }

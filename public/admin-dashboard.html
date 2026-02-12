@@ -1,3 +1,12 @@
+<!-- 
+  @file public/admin-dashboard.html
+  @description Admin interface for managing the PsyConnect platform.
+  
+  Features:
+  - Platform statistics overview
+  - Doctor management (Add, Delete)
+  - Patient/Admin user management
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -377,6 +386,7 @@
             }
         }
     </style>
+    <script src="js/notifications.js"></script>
 </head>
 
 <body>
@@ -434,7 +444,8 @@
                         style="background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
                         <span>📊</span> <span data-i18n="admin.stats.export_pdf">Exporter PDF</span>
                     </button>
-                    <button class="btn-refresh" onclick="loadDashboardStats()">Actualiser</button>
+                    <button class="btn-refresh" onclick="loadDashboardStats()"
+                        data-i18n="common.refresh">Actualiser</button>
                 </div>
             </div>
 
@@ -574,8 +585,9 @@
             <div id="doctors-section" class="content-section" style="display: none;">
                 <!-- ... existing content ... -->
                 <h3 class="section-title">
-                    Liste des médecins
-                    <button class="btn-primary" onclick="loadDoctors()">🔄 Actualiser</button>
+                    <span data-i18n="admin.doctors.list_title">Liste des médecins</span>
+                    <button class="btn-primary" onclick="loadDoctors()"><span data-i18n="common.refresh">🔄
+                            Actualiser</span></button>
                 </h3>
                 <div id="doctorsAlert" class="alert"></div>
                 <div class="table-container">
@@ -658,7 +670,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
         let token = localStorage.getItem('token');
 
         // Check authentication & Super Admin
@@ -745,7 +757,7 @@
 
         async function downloadStatsPDF() {
             if (!window.currentStats) {
-                alert('Veuillez attendre le chargement des statistiques.');
+                showNotification('Veuillez attendre le chargement des statistiques.', 'info');
                 return;
             }
 
@@ -945,18 +957,13 @@
                 const alert = document.getElementById('adminsAlert');
 
                 if (data.success) {
-                    alert.className = 'alert alert-success show';
-                    alert.textContent = data.message;
+                    showNotification(data.message, 'success');
                     loadAdmins();
-                    setTimeout(() => alert.classList.remove('show'), 3000);
                 } else {
-                    alert.className = 'alert alert-error show';
-                    alert.textContent = data.message;
+                    showNotification(data.message, 'error');
                 }
             } catch (error) {
-                const alert = document.getElementById('adminsAlert');
-                alert.className = 'alert alert-error show';
-                alert.textContent = 'Erreur lors de la suppression';
+                showNotification('Erreur lors de la suppression', 'error');
             }
         }
 
@@ -988,18 +995,13 @@
                 const alert = document.getElementById('createAlert');
 
                 if (data.success) {
-                    alert.className = 'alert alert-success show';
-                    alert.textContent = data.message;
+                    showNotification(data.message, 'success');
                     document.getElementById('createDoctorForm').reset();
-                    setTimeout(() => alert.classList.remove('show'), 3000);
                 } else {
-                    alert.className = 'alert alert-error show';
-                    alert.textContent = data.message;
+                    showNotification(data.message, 'error');
                 }
             } catch (error) {
-                const alert = document.getElementById('createAlert');
-                alert.className = 'alert alert-error show';
-                alert.textContent = 'Erreur lors de la création du compte';
+                showNotification('Erreur lors de la création du compte', 'error');
             }
         });
 

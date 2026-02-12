@@ -1,3 +1,12 @@
+<!-- 
+  @file public/register.html
+  @description User registration page for PsyConnect.
+  
+  Features:
+  - Account creation for Patients
+  - Multi-language support (i18n)
+  - Form validation for personal information
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -405,6 +414,7 @@
         }
     </style>
     <script src="js/i18n.js"></script>
+    <script src="js/notifications.js"></script>
 </head>
 
 <body>
@@ -474,8 +484,9 @@
 
                 <div class="terms-checkbox">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms" data-i18n="register.terms">
-                        J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de
+                    <label for="terms">
+                        <span data-i18n="register.terms_accept">J'accepte les</span> <a href="#">conditions
+                            d'utilisation</a> <span data-i18n="register.terms_and">et la</span> <a href="#">politique de
                             confidentialité</a>
                     </label>
                 </div>
@@ -483,8 +494,9 @@
                 <button type="submit" class="btn-register" data-i18n="register.submit">Créer mon compte</button>
             </form>
 
-            <div class="login-link" data-i18n="register.has_account">
-                Vous avez déjà un compte ? <a href="login.html">Se connecter</a>
+            <div class="login-link">
+                <span data-i18n="register.has_account_text">Vous avez déjà un compte ?</span> <a href="login.html"
+                    data-i18n="nav.login">Se connecter</a>
             </div>
 
             <div class="back-home">
@@ -530,7 +542,7 @@
             }
         }
 
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
 
         document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
@@ -539,7 +551,7 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
 
             if (password !== confirmPassword) {
-                alert('Les mots de passe ne correspondent pas !');
+                showNotification('Les mots de passe ne correspondent pas !', 'error');
                 return;
             }
 
@@ -567,16 +579,16 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('Inscription réussie ! Vous allez être redirigé vers la page de connexion.');
-                    window.location.href = 'login.html';
+                    showNotification('Inscription réussie ! Vous allez être redirigé.', 'success');
+                    setTimeout(() => window.location.href = 'login.html', 2000);
                 } else {
-                    alert(data.message || 'Erreur lors de l\'inscription');
+                    showNotification(data.message || 'Erreur lors de l\'inscription', 'error');
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Créer mon compte';
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                alert('Erreur de connexion au serveur. Assurez-vous que le serveur est démarré.');
+                showNotification('Erreur de connexion au serveur. Assurez-vous que le serveur est démarré.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Créer mon compte';
             }

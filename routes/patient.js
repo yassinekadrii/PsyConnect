@@ -1,3 +1,8 @@
+/**
+ * @file routes/patient.js
+ * @description Patient-specific routes, such as public doctor listings.
+ */
+
 const express = require('express');
 const router = express.Router();
 const patientController = require('../controllers/patientController');

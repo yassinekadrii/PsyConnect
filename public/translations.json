@@ -88,6 +88,9 @@
             },
             "header": {
                 "video_call": "Start Video Call",
+                "join_video": "Join Call",
+                "share_screen": "Share Screen",
+                "stop_sharing": "Stop Sharing",
                 "add_prescription": "Add Prescription",
                 "view_prescriptions": "View Prescriptions"
             },
@@ -112,13 +115,62 @@
             "firstname": "First Name",
             "lastname": "Last Name",
             "email": "Email address",
+            "phone": "Phone number",
             "current_password": "Current Password (required to change)",
             "new_password": "New Password",
             "submit": "Save Changes",
             "back": "Back to Dashboard",
             "success": "Profile updated successfully",
             "error": "Error updating profile",
-            "auth_error": "Current password incorrect"
+            "auth_error": "Current password incorrect",
+            "doctor_section": "Professional Profile",
+            "bio": "Bio / Professional Description",
+            "specialty": "Specialty",
+            "location": "Location",
+            "availability": "Availability (e.g. Mon-Fri, 9am-5pm)",
+            "consultation_mode": "Consultation Mode",
+            "mode_online": "Online",
+            "mode_office": "In-Office",
+            "mode_both": "Both",
+            "professional_docs": "Professional Documents",
+            "cert_label": "Certification (PDF)",
+            "cv_label": "CV (PDF)",
+            "view_doc": "View Document",
+            "no_doc": "No document uploaded",
+            "upload_btn": "Update Profile"
+        },
+        "common": {
+            "cancel": "Cancel",
+            "close": "Close",
+            "save": "Save",
+            "loading": "Loading..."
+        },
+        "services": {
+            "title": "Our Services",
+            "subtitle": "Solutions tailored to your needs for your mental well-being",
+            "individual_title": "Individual Therapy",
+            "individual_desc": "Personalized support with qualified psychologists to help you overcome personal challenges and achieve your well-being goals.",
+            "couple_title": "Couple Therapy",
+            "couple_desc": "Strengthen your relationship and improve communication through our couples therapy sessions with experienced specialists.",
+            "family_title": "Family Therapy",
+            "family_desc": "Create a harmonious family environment and resolve conflicts with the help of our professional family therapists."
+        },
+        "about": {
+            "title": "About PsyConnect",
+            "desc1": "PsyConnect is an innovative platform that facilitates access to quality psychological care. Our mission is to make psychological support accessible to everyone, everywhere and at any time.",
+            "desc2": "We collaborate with certified and experienced psychologists who are committed to offering you professional, confidential and caring support.",
+            "stats": {
+                "patients": "Satisfied Patients",
+                "psychologists": "Psychologists",
+                "satisfaction": "Satisfaction Rate"
+            }
+        },
+        "footer": {
+            "brand_desc": "Your trusted partner for your mental well-being. Together, let's build a more serene future.",
+            "rights": "All rights reserved.",
+            "made_with": "Made with ❤️ by Yassine Kadri.",
+            "company": "Company",
+            "support": "Support"
         }
     },
     "fr": {
@@ -210,6 +262,9 @@
             },
             "header": {
                 "video_call": "Appel Vidéo",
+                "join_video": "Rejoindre",
+                "share_screen": "Partager l'écran",
+                "stop_sharing": "Arrêter le partage",
                 "add_prescription": "Ajouter Ordonnance",
                 "view_prescriptions": "Voir Ordonnances"
             },
@@ -226,7 +281,12 @@
                 "notes": "Instructions de prise",
                 "instructions": "Instructions générales",
                 "save": "Enregistrer l'ordonnance",
-                "download": "Télécharger PDF"
+                "upload_pdf": "Alternative : Télécharger PDF",
+                "pdf_ready": "PDF prêt à être envoyé",
+                "download": "Télécharger PDF",
+                "view_pdf": "Voir PDF",
+                "generate_pdf": "Générer PDF",
+                "doc_attached": "Document PDF joint par le médecin"
             }
         },
         "profile": {
@@ -234,13 +294,62 @@
             "firstname": "Prénom",
             "lastname": "Nom",
             "email": "Adresse email",
+            "phone": "Numéro de téléphone",
             "current_password": "Mot de passe actuel (requis pour changer)",
             "new_password": "Nouveau mot de passe",
             "submit": "Enregistrer les modifications",
             "back": "Retour au tableau de bord",
             "success": "Profil mis à jour avec succès",
             "error": "Erreur lors de la mise à jour",
-            "auth_error": "Mot de passe actuel incorrect"
+            "auth_error": "Mot de passe actuel incorrect",
+            "doctor_section": "Annonce Professionnelle",
+            "bio": "Bio / Description Professionnelle",
+            "specialty": "Spécialité",
+            "location": "Localisation",
+            "availability": "Disponibilité (ex: Lun-Ven, 9h-17h)",
+            "consultation_mode": "Mode de consultation",
+            "mode_online": "En ligne",
+            "mode_office": "Au cabinet",
+            "mode_both": "Les deux",
+            "professional_docs": "Documents Professionnels",
+            "cert_label": "Certification (PDF)",
+            "cv_label": "CV (PDF)",
+            "view_doc": "Voir le document",
+            "no_doc": "Aucun document téléchargé",
+            "upload_btn": "Mettre à jour le profil"
+        },
+        "common": {
+            "cancel": "Annuler",
+            "close": "Fermer",
+            "save": "Enregistrer",
+            "loading": "Chargement..."
+        },
+        "services": {
+            "title": "Nos Services",
+            "subtitle": "Des solutions adaptées à vos besoins pour votre bien-être mental",
+            "individual_title": "Thérapie Individuelle",
+            "individual_desc": "Un accompagnement personnalisé avec des psychologues qualifiés pour vous aider à surmonter vos défis personnels et atteindre vos objectifs de bien-être.",
+            "couple_title": "Thérapie de Couple",
+            "couple_desc": "Renforcez votre relation et améliorez votre communication grâce à nos séances de thérapie de couple avec des spécialistes expérimentés.",
+            "family_title": "Thérapie Familiale",
+            "family_desc": "Créez un environnement familial harmonieux et résolvez les conflits avec l'aide de nos thérapeutes familiaux professionnels."
+        },
+        "about": {
+            "title": "À Propos de PsyConnect",
+            "desc1": "PsyConnect est une plateforme innovante qui facilite l'accès aux soins psychologiques de qualité. Notre mission est de rendre le soutien psychologique accessible à tous, partout et à tout moment.",
+            "desc2": "Nous collaborons avec des psychologues certifiés et expérimentés qui s'engagent à vous offrir un accompagnement professionnel, confidentiel et bienveillant.",
+            "stats": {
+                "patients": "Patients Satisfaits",
+                "psychologists": "Psychologues",
+                "satisfaction": "Taux de Satisfaction"
+            }
+        },
+        "footer": {
+            "brand_desc": "Votre partenaire de confiance pour votre bien-être mental. Ensemble, construisons un avenir plus serein.",
+            "rights": "Tous droits réservés.",
+            "made_with": "Fabriqué avec ❤️ par Yassine Kadri.",
+            "company": "Entreprise",
+            "support": "Support"
         }
     },
     "ar": {
@@ -332,6 +441,9 @@
             },
             "header": {
                 "video_call": "بدء مكالمة فيديو",
+                "join_video": "الانضمام للمكالمة",
+                "share_screen": "مشاركة الشاشة",
+                "stop_sharing": "إيقاف المشاركة",
                 "add_prescription": "إضافة وصفة",
                 "view_prescriptions": "عرض الوصفات"
             },
@@ -348,7 +460,12 @@
                 "notes": "تعليمات الاستخدام",
                 "instructions": "تعليمات عامة",
                 "save": "حفظ الوصفة",
-                "download": "تحميل PDF"
+                "upload_pdf": "بديل: تحميل PDF",
+                "pdf_ready": "PDF جاهز للإرسال",
+                "download": "تحميل PDF",
+                "view_pdf": "عرض PDF",
+                "generate_pdf": "توليد PDF",
+                "doc_attached": "مستند PDF مرفق من قبل الطبيب"
             }
         },
         "profile": {
@@ -356,13 +473,62 @@
             "firstname": "الاسم الأول",
             "lastname": "الاسم الأخير",
             "email": "البريد الإلكتروني",
+            "phone": "رقم الهاتف",
             "current_password": "كلمة المرور الحالية (مطلوبة للتغيير)",
             "new_password": "كلمة المرور الجديدة",
             "submit": "حفظ التغييرات",
             "back": "العودة للوحة التحكم",
             "success": "تم تحديث الملف الشخصي بنجاح",
             "error": "خطأ في تحديث الملف الشخصي",
-            "auth_error": "كلمة المرور الحالية غير صحيحة"
+            "auth_error": "كلمة المرور الحالية غير صحيحة",
+            "doctor_section": "الإعلان المهني",
+            "bio": "السيرة الذاتية / الوصف المهني",
+            "specialty": "التخصص",
+            "location": "الموقع",
+            "availability": "التوفر (مثلاً: الإثنين-الجمعة، 9 صباحاً-5 مساءً)",
+            "consultation_mode": "طريقة الاستشارة",
+            "mode_online": "عبر الإنترنت",
+            "mode_office": "في العيادة",
+            "mode_both": "كلاهما",
+            "professional_docs": "المستندات المهنية",
+            "cert_label": "الشهادات (PDF)",
+            "cv_label": "السيرة الذاتية (PDF)",
+            "view_doc": "عرض المستند",
+            "no_doc": "لم يتم تحميل أي مستند",
+            "upload_btn": "تحديث الملف الشخصي"
+        },
+        "common": {
+            "cancel": "إلغاء",
+            "close": "إغلاق",
+            "save": "حفظ",
+            "loading": "جاري التحميل..."
+        },
+        "services": {
+            "title": "خدماتنا",
+            "subtitle": "حلول مصممة خصيصاً لاحتياجاتك من أجل رفاهيتك النفسية",
+            "individual_title": "علاج فردي",
+            "individual_desc": "دعم مخصص مع أخصائيين نفسيين مؤهلين لمساعدتك على التغلب على التحديات الشخصية وتحقيق أهدافك.",
+            "couple_title": "علاج للأزواج",
+            "couple_desc": "عزز علاقتك وحسن تواصلك من خلال جلسات العلاج الزوجي مع أخصائيين ذوي خبرة.",
+            "family_title": "علاج عائلي",
+            "family_desc": "خلق بيئة عائلية متناغمة وحل النزاعات بمساعدة معالجينا العائليين المهنيين."
+        },
+        "about": {
+            "title": "حول PsyConnect",
+            "desc1": "PsyConnect هي منصة مبتكرة تسهل الوصول إلى رعاية نفسية عالية الجودة. مهمتنا هي جعل الدعم النفسي متاحاً للجميع، في كل مكان وفي أي وقت.",
+            "desc2": "نحن نتعاون مع أخصائيين نفسيين معتمدين وذوي خبرة يلتزمون بتقديم دعم مهني وسري ورحيم.",
+            "stats": {
+                "patients": "مريض راضٍ",
+                "psychologists": "أخصائي نفسي",
+                "satisfaction": "نسبة الرضا"
+            }
+        },
+        "footer": {
+            "brand_desc": "شريكك الموثوق لرفاهيتك النفسية. معاً، نبني مستقبلاً أكثر طمأنينة.",
+            "rights": "جميع الحقوق محفوظة.",
+            "made_with": "صنع بـ ❤️ بواسطة ياسين قدري.",
+            "company": "الشركة",
+            "support": "الدعم"
         }
     }
 }

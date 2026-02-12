@@ -1,3 +1,14 @@
+/**
+ * @file controllers/adminController.js
+ * @description Controller logic for administrative actions.
+ * 
+ * Handles:
+ * - Doctor account creation and management
+ * - Patient management
+ * - Admin account management
+ * - Dashboard statistics
+ */
+
 const User = require('../models/User');
 const Message = require('../models/Message');
 const Prescription = require('../models/Prescription');
@@ -48,6 +59,14 @@ const createDoctor = async (req, res) => {
                 email: doctor.email,
                 phone: doctor.phone,
                 role: doctor.role,
+                profilePicture: doctor.profilePicture || '',
+                certification: doctor.certification || '',
+                cv: doctor.cv || '',
+                bio: doctor.bio || '',
+                specialty: doctor.specialty || '',
+                availability: doctor.availability || '',
+                location: doctor.location || '',
+                consultationMode: doctor.consultationMode || 'online',
                 createdAt: doctor.createdAt
             }
         });

@@ -1,3 +1,8 @@
+/**
+ * @file controllers/prescriptionController.js
+ * @description Controller for managing medical prescriptions issued by doctors.
+ */
+
 const Prescription = require('../models/Prescription');
 const User = require('../models/User');
 
@@ -6,12 +11,12 @@ const User = require('../models/User');
 // @access  Doctor only
 exports.createPrescription = async (req, res) => {
     try {
-        const { patientId, medicines, instructions } = req.body;
+        const { patientId, medicines, instructions, pdf } = req.body;
 
-        if (!patientId || !medicines || medicines.length === 0) {
+        if (!patientId || ((!medicines || medicines.length === 0) && !pdf)) {
             return res.status(400).json({
                 success: false,
-                message: 'Veuillez fournir un patient et au moins un médicament.'
+                message: 'Veuillez fournir un patient et soit des médicaments, soit un fichier PDF.'
             });
         }
 
@@ -27,8 +32,9 @@ exports.createPrescription = async (req, res) => {
         const prescription = new Prescription({
             doctor: req.user.id,
             patient: patientId,
-            medicines,
-            instructions
+            medicines: medicines || [],
+            instructions,
+            pdf: pdf || ''
         });
 
         await prescription.save();

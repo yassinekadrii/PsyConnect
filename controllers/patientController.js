@@ -1,10 +1,15 @@
+/**
+ * @file controllers/patientController.js
+ * @description Controller for patient-specific actions, such as viewing doctor profiles.
+ */
+
 const User = require('../models/User');
 
 // Get all doctors (public info only)
 exports.getAllDoctorsPublic = async (req, res) => {
     try {
         const doctors = await User.find({ role: 'doctor' })
-            .select('firstName lastName email phone _id') // Exclude password
+            .select('firstName lastName specialty bio profilePicture certification cv _id') // Public info only
             .sort({ createdAt: -1 });
 
         res.json({

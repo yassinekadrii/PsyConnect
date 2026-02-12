@@ -1,3 +1,8 @@
+/**
+ * @file scripts/setupSuperAdmin.js
+ * @description Script to configure or elevate a user to Super Admin status.
+ * Used for recovery or high-level platform configuration.
+ */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('../models/User');

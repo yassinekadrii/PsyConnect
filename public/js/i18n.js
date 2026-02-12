@@ -1,3 +1,14 @@
+/**
+ * @file public/js/i18n.js
+ * @description Internationalization (i18n) logic for multi-language support (FR, EN, AR).
+ * 
+ * Handles:
+ * - Loading translations from translations.json
+ * - Language switching and persistence (localStorage)
+ * - RTL/LTR direction switching for Arabic support
+ * - Dynamic text replacement using data-i18n attributes
+ */
+
 const translationsUrl = './translations.json';
 let translations = {};
 let currentLang = localStorage.getItem('lang') || 'fr';
@@ -20,11 +31,13 @@ function applyLanguage(lang) {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
-    // Switch entire body font if Arabic to something more readable if needed
+    // Switch body font for Arabic to something more readable
     if (lang === 'ar') {
-        document.body.style.fontFamily = "'Inter', Arial, sans-serif";
+        document.body.style.fontFamily = "'Inter', 'Arial', sans-serif";
+        document.body.classList.add('rtl');
     } else {
         document.body.style.fontFamily = "'Inter', sans-serif";
+        document.body.classList.remove('rtl');
     }
 
     // Apply translations to all elements with data-i18n attribute

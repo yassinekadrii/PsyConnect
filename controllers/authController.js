@@ -1,3 +1,8 @@
+/**
+ * @file controllers/authController.js
+ * @description Controller for user authentication (Register, Login).
+ */
+
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -59,7 +64,15 @@ const register = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 phone: user.phone,
-                role: user.role
+                role: user.role,
+                profilePicture: user.profilePicture || '',
+                certification: user.certification || '',
+                cv: user.cv || '',
+                bio: user.bio || '',
+                specialty: user.specialty || '',
+                availability: user.availability || '',
+                location: user.location || '',
+                consultationMode: user.consultationMode || 'online'
             }
         });
     } catch (error) {
@@ -78,9 +91,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(`Login attempt for: ${email}`);
 
         // Validate required fields
         if (!email || !password) {
+            console.log('Login failed: Missing email or password');
             return res.status(400).json({
                 success: false,
                 message: 'Email et mot de passe requis.'
@@ -88,28 +103,34 @@ const login = async (req, res) => {
         }
 
         // Find user and include password
+        console.log('Searching for user...');
         const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
+            console.log(`Login failed: User not found (${email})`);
             return res.status(401).json({
                 success: false,
                 message: 'Email ou mot de passe incorrect.'
             });
         }
 
+        console.log('User found, comparing passwords...');
         // Check password
         const isPasswordValid = await user.comparePassword(password);
 
         if (!isPasswordValid) {
+            console.log('Login failed: Invalid password');
             return res.status(401).json({
                 success: false,
                 message: 'Email ou mot de passe incorrect.'
             });
         }
 
+        console.log('Password valid, generating token...');
         // Generate token
         const token = generateToken(user._id);
 
+        console.log('Login successful, sending response');
         res.status(200).json({
             success: true,
             message: 'Connexion réussie.',
@@ -120,7 +141,15 @@ const login = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 phone: user.phone,
-                role: user.role
+                role: user.role,
+                profilePicture: user.profilePicture || '',
+                certification: user.certification || '',
+                cv: user.cv || '',
+                bio: user.bio || '',
+                specialty: user.specialty || '',
+                availability: user.availability || '',
+                location: user.location || '',
+                consultationMode: user.consultationMode || 'online'
             }
         });
     } catch (error) {

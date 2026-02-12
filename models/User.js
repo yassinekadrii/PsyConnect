@@ -1,3 +1,14 @@
+/**
+ * @file User.js
+ * @description Mongoose schema and model for Users.
+ * 
+ * This model handles:
+ * - User profile information (Patient, Doctor, Admin roles)
+ * - Password hashing (bcrypt)
+ * - Authentication methods
+ * - Sensitive data filtering
+ */
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -39,6 +50,39 @@ const userSchema = new mongoose.Schema({
   isSuperAdmin: {
     type: Boolean,
     default: false
+  },
+  profilePicture: {
+    type: String,
+    default: ''
+  },
+  certification: {
+    type: String,
+    default: ''
+  },
+  cv: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
+  },
+  specialty: {
+    type: String,
+    default: ''
+  },
+  availability: {
+    type: String,
+    default: ''
+  },
+  location: {
+    type: String,
+    default: ''
+  },
+  consultationMode: {
+    type: String,
+    enum: ['online', 'presence', 'both'],
+    default: 'online'
   },
   createdAt: {
     type: Date,

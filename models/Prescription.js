@@ -1,3 +1,8 @@
+/**
+ * @file Prescription.js
+ * @description Mongoose schema for medical prescriptions issued by doctors to patients.
+ */
+
 const mongoose = require('mongoose');
 
 const PrescriptionSchema = new mongoose.Schema({
@@ -10,6 +15,10 @@ const PrescriptionSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    pdf: {
+        type: String,
+        default: ''
     },
     medicines: [{
         name: {

@@ -1,3 +1,8 @@
+/**
+ * @file controllers/messageController.js
+ * @description Controller for managing chat messages and conversations.
+ */
+
 const Message = require('../models/Message');
 const User = require('../models/User');
 
@@ -63,14 +68,14 @@ exports.getConversations = async (req, res) => {
             $or: [{ sender: currentUserId }, { receiver: currentUserId }]
         })
             .sort({ createdAt: -1 })
-            .populate('sender', 'firstName lastName role')
-            .populate('receiver', 'firstName lastName role');
+            .populate('sender', 'firstName lastName role profilePicture')
+            .populate('receiver', 'firstName lastName role profilePicture');
 
         const conversations = [];
         const seenUsers = new Set();
 
         messages.forEach(msg => {
-            const otherUser = msg.sender._id.toString() === currentUserId
+            const otherUser = msg.sender._id.toString() === currentUserId.toString()
                 ? msg.receiver
                 : msg.sender;
 

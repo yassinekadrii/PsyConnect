@@ -1,3 +1,12 @@
+<!-- 
+  @file public/profile.html
+  @description User profile management page.
+  
+  Features:
+  - Display and update personal information
+  - Password change functionality
+  - Role-specific profile views
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -23,9 +32,12 @@
             background: var(--bg-light);
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            /* Changed from center to allow scrolling */
+            min-height: 100vh;
             margin: 0;
+            padding: 2rem 1rem;
+            /* Added padding for scrolling */
         }
 
         .container {
@@ -109,6 +121,145 @@
             color: var(--success-color);
             border: 1px solid #d1fae5;
         }
+
+        /* Profile Picture Styles */
+        .profile-pic-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            cursor: pointer;
+        }
+
+        .profile-pic {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--white);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background: #f1f5f9;
+        }
+
+        .profile-pic-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid var(--white);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Professional Docs Styles */
+        .professional-docs {
+            margin-top: 1.5rem;
+            display: none;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .doc-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .doc-icon {
+            font-size: 1.2rem;
+        }
+
+        .doc-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .doc-status {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .status-uploaded {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-empty {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .btn-upload-doc {
+            background: var(--white);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: auto;
+            margin: 0;
+            transition: all 0.2s;
+        }
+
+        .btn-upload-doc:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Listing Styles */
+        .listing-section {
+            margin-top: 1.5rem;
+            display: none;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+        }
     </style>
 </head>
 
@@ -120,7 +271,18 @@
         </div>
         <h2 data-i18n="profile.title">Modifier mon profil</h2>
         <div id="messageBox" class="message"></div>
+
+        <div class="profile-pic-container" onclick="document.getElementById('fileInput').click()">
+            <img id="profilePreview" src="" alt="Profile" class="profile-pic">
+            <div class="profile-pic-overlay">📷</div>
+            <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+        </div>
+
         <form id="profileForm" onsubmit="handleUpdate(event)">
+            <h3 data-i18n="profile.doctor_section"
+                style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 0.2rem;">
+                Informations Personnelles</h3>
+
             <div class="form-group">
                 <label data-i18n="profile.firstname">Prénom</label>
                 <input type="text" id="firstName">
@@ -132,6 +294,83 @@
             <div class="form-group">
                 <label data-i18n="profile.email">Email</label>
                 <input type="email" id="email" disabled style="background: #f1f5f9;">
+            </div>
+
+            <!-- Doctor-Specific Professional Sections -->
+            <div id="doctorOnlySection" style="display: none;">
+                <h3 data-i18n="profile.doctor_section"
+                    style="font-size: 1rem; margin: 1.5rem 0 1rem; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 0.2rem;">
+                    Annonce Professionnelle (Post)</h3>
+
+                <div class="listing-section" style="display: block; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label data-i18n="profile.specialty">Spécialité</label>
+                        <input type="text" id="specialty" data-i18n="profile.specialty"
+                            placeholder="ex: Psychologue Clinicien, Thérapeute...">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="profile.bio">Bio Professionnelle</label>
+                        <textarea id="bio" data-i18n="profile.bio"
+                            placeholder="Décrivez votre parcours, vos méthodes..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="profile.availability">Disponibilités</label>
+                        <input type="text" id="availability" data-i18n="profile.availability"
+                            placeholder="ex: Lun-Ven 09h-18h">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="profile.location">Lieu du Cabinet (si présentiel)</label>
+                        <input type="text" id="location" data-i18n="profile.location"
+                            placeholder="ex: 123 Rue de la Paix, Casablanca">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-i18n="profile.consultation_mode">Mode de Consultation</label>
+                        <select id="consultationMode">
+                            <option value="online" data-i18n="profile.mode_online">En ligne uniquement</option>
+                            <option value="presence" data-i18n="profile.mode_office">En cabinet uniquement</option>
+                            <option value="both" data-i18n="profile.mode_both">Les deux (En ligne & Présentiel)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3 data-i18n="profile.professional_docs"
+                    style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-dark); border-bottom: 2px solid var(--primary-color); display: inline-block; padding-bottom: 0.2rem;">
+                    Documents Professionnels</h3>
+
+                <div class="professional-docs" style="display: block;">
+                    <div class="doc-item">
+                        <div class="doc-info">
+                            <span class="doc-icon">📄</span>
+                            <div>
+                                <div class="doc-name" data-i18n="profile.cert_label">Certification / Diplôme</div>
+                                <span id="certStatus" class="doc-status status-empty" data-i18n="profile.no_doc">Non
+                                    téléchargé</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-upload-doc"
+                            onclick="document.getElementById('certInput').click()">Upload</button>
+                        <input type="file" id="certInput" style="display: none;"
+                            onchange="handleDocUpload(event, 'certification')">
+                    </div>
+
+                    <div class="doc-item">
+                        <div class="doc-info">
+                            <span class="doc-icon">💼</span>
+                            <div>
+                                <div class="doc-name" data-i18n="profile.cv_label">Curriculum Vitae (CV)</div>
+                                <span id="cvStatus" class="doc-status status-empty" data-i18n="profile.no_doc">Non
+                                    téléchargé</span>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-upload-doc"
+                            onclick="document.getElementById('cvInput').click()">Upload</button>
+                        <input type="file" id="cvInput" style="display: none;" onchange="handleDocUpload(event, 'cv')">
+                    </div>
+                </div>
             </div>
             <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
             <div class="form-group">
@@ -147,9 +386,10 @@
         <a href="#" onclick="goBack()" class="back-link" data-i18n="profile.back">Retour au tableau de bord</a>
     </div>
 
+    <script src="js/notifications.js"></script>
     <script src="js/i18n.js"></script>
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -159,6 +399,69 @@
         document.getElementById('firstName').value = user.firstName || '';
         document.getElementById('lastName').value = user.lastName || '';
         document.getElementById('email').value = user.email || '';
+
+        const previewEl = document.getElementById('profilePreview');
+        if (user.profilePicture) {
+            previewEl.src = user.profilePicture;
+        } else {
+            previewEl.src = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=6366f1&color=fff&size=128`;
+        }
+
+        // Professional sections logic
+        if (user.role === 'doctor') {
+            document.getElementById('doctorOnlySection').style.display = 'block';
+
+            if (user.certification) {
+                document.getElementById('certStatus').textContent = 'Téléchargé';
+                document.getElementById('certStatus').className = 'doc-status status-uploaded';
+            }
+            if (user.cv) {
+                document.getElementById('cvStatus').textContent = 'Téléchargé';
+                document.getElementById('cvStatus').className = 'doc-status status-uploaded';
+            }
+
+            // Load listing data
+            document.getElementById('specialty').value = user.specialty || '';
+            document.getElementById('bio').value = user.bio || '';
+            document.getElementById('availability').value = user.availability || '';
+            document.getElementById('location').value = user.location || '';
+            document.getElementById('consultationMode').value = user.consultationMode || 'online';
+        }
+
+        let base64Image = null;
+        let base64Cert = null;
+        let base64Cv = null;
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                    base64Image = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleDocUpload(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (type === 'certification') {
+                        base64Cert = e.target.result;
+                        document.getElementById('certStatus').textContent = 'Prêt à enregistrer';
+                        document.getElementById('certStatus').className = 'doc-status status-uploaded';
+                    } else {
+                        base64Cv = e.target.result;
+                        document.getElementById('cvStatus').textContent = 'Prêt à enregistrer';
+                        document.getElementById('cvStatus').className = 'doc-status status-uploaded';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
 
         function goBack() {
             if (user.role === 'admin') window.location.href = 'admin-dashboard.html';
@@ -177,6 +480,17 @@
             const newPassword = document.getElementById('newPassword').value;
 
             const payload = { firstName, lastName };
+            if (base64Image) payload.profilePicture = base64Image;
+            if (base64Cert) payload.certification = base64Cert;
+            if (base64Cv) payload.cv = base64Cv;
+
+            if (user.role === 'doctor') {
+                payload.specialty = document.getElementById('specialty').value;
+                payload.bio = document.getElementById('bio').value;
+                payload.availability = document.getElementById('availability').value;
+                payload.location = document.getElementById('location').value;
+                payload.consultationMode = document.getElementById('consultationMode').value;
+            }
 
             if (newPassword) {
                 if (!currentPassword) {
@@ -188,6 +502,12 @@
             }
 
             try {
+                // Show loading state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enregistrement...';
+
                 const response = await fetch(`${API_URL}/user/profile`, {
                     method: 'PUT',
                     headers: {
@@ -200,7 +520,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showMessage(getNestedTranslation(currentLang, 'profile.success'), 'success');
+                    showNotification(getNestedTranslation(currentLang, 'profile.success'), 'success');
                     // Update user in local storage
                     const updatedUser = { ...user, ...data.user };
                     localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -208,11 +528,15 @@
                     document.getElementById('currentPassword').value = '';
                     document.getElementById('newPassword').value = '';
                 } else {
-                    showMessage(data.message || getNestedTranslation(currentLang, 'profile.error'), 'error');
+                    showNotification(data.message || getNestedTranslation(currentLang, 'profile.error'), 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showMessage(getNestedTranslation(currentLang, 'profile.error'), 'error');
+                showNotification(getNestedTranslation(currentLang, 'profile.error'), 'error');
+            } finally {
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enregistrer les modifications';
             }
         }
 

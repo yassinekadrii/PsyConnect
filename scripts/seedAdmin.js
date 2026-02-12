@@ -1,3 +1,8 @@
+/**
+ * @file scripts/seedAdmin.js
+ * @description Script to seed initial administrative users into the database.
+ * Useful for initializing the platform after a clean database setup.
+ */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const User = require('../models/User');

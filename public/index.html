@@ -1,3 +1,14 @@
+<!-- 
+  @file public/index.html
+  @description Main landing page for PsyConnect.
+  
+  Sections:
+  - Navbar: Multi-language switcher, authentication links
+  - Hero: Brand introduction
+  - Services: Overview of platform features
+  - Specialists: Dynamic listing of doctors
+  - About/Contact: Platform information
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -80,7 +91,7 @@
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 1.25rem;
             list-style: none;
         }
 
@@ -525,6 +536,99 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .navbar {
+                padding: 0.5rem 0;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+
+            .hamburger {
+                display: block;
+                cursor: pointer;
+                z-index: 1001;
+            }
+
+            .hamburger span {
+                display: block;
+                width: 25px;
+                height: 3px;
+                margin: 5px auto;
+                background-color: var(--text-dark);
+                transition: all 0.3s ease-in-out;
+            }
+
+            .nav-links {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                padding: 2rem 0;
+                gap: 1.5rem;
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-auth {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 1rem 2rem 2rem;
+                gap: 1rem;
+                position: fixed;
+                left: -100%;
+                top: 380px;
+                /* Adjust top based on nav-links padding/items */
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(10px);
+                transition: 0.3s;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                z-index: 1000;
+            }
+
+            .nav-auth.active {
+                display: flex;
+                left: 0;
+            }
+
+            .nav-links li {
+                margin: 1.5rem 0;
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            .logo {
+                order: 1;
+            }
+
+            .nav-lang {
+                order: 2;
+                margin: 0 !important;
+            }
+
+            .hamburger {
+                order: 3;
+                display: block;
+            }
 
             .hero-container,
             .about-container {
@@ -535,11 +639,6 @@
                 font-size: 2.5rem;
             }
 
-            .nav-links,
-            .nav-auth {
-                display: none;
-            }
-
             .footer-container {
                 grid-template-columns: 1fr;
             }
@@ -548,40 +647,339 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Doctor Profile Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: modalFadeIn 0.3s ease-out;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 2rem;
+            background: var(--gradient-1);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            background: var(--bg-light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .doc-section {
+            margin-bottom: 2rem;
+        }
+
+        .doc-section h4 {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .doc-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 0.75rem;
+        }
+
+        .doc-btn:hover {
+            border-color: var(--primary-color);
+            background: var(--bg-light);
+            transform: translateX(5px);
+        }
+
+        .doc-btn .icon {
+            font-size: 1.5rem;
+        }
+
+        .doc-btn .details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doc-btn .title {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .doc-btn .action {
+            font-size: 0.8rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
     </style>
     <script src="js/i18n.js"></script>
+    <script src="js/notifications.js"></script>
 </head>
 
 <body>
     <!-- Navbar -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <div class="logo">PsyConnect</div>
+            <div class="logo" onclick="window.location.href='index.html'">PsyConnect</div>
+
             <ul class="nav-links">
                 <li><a href="#accueil" data-i18n="nav.accueil">Accueil</a></li>
                 <li><a href="#services" data-i18n="nav.services">Services</a></li>
                 <li><a href="#specialistes" data-i18n="nav.specialistes">Spécialistes</a></li>
+
                 <li><a href="#apropos" data-i18n="nav.apropos">À Propos</a></li>
                 <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
             </ul>
-            <div style="margin: 0 1rem;">
-                <button class="lang-btn" id="langSwitcher" onclick="toggleLanguage()"
-                    style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.9rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
-            </div>
-            <div id="authButtons" class="nav-auth">
-                <button class="btn-login" onclick="window.location.href='login.html'"
-                    data-i18n="nav.login">Connexion</button>
-                <button class="btn-register" onclick="window.location.href='register.html'"
-                    data-i18n="nav.register">S'inscrire</button>
+
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 1rem;">
+                <div class="nav-lang">
+                    <button class="lang-btn" id="langSwitcher" onclick="toggleLanguage()"
+                        style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.9rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
+                </div>
+
+                <div id="authButtons" class="nav-auth">
+                    <button class="btn-login" onclick="window.location.href='login.html'"
+                        data-i18n="nav.login">Connexion</button>
+                    <button class="btn-register" onclick="window.location.href='register.html'"
+                        data-i18n="nav.register">S'inscrire</button>
+                </div>
+
+                <div class="hamburger" id="mobile-menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
         </div>
     </nav>
 
     <script>
+        let allDoctors = [];
+
+        async function fetchDoctors() {
+            try {
+                const response = await fetch('/api/patient/doctors');
+                const data = await response.json();
+                const grid = document.getElementById('doctorsGrid');
+
+                if (data.success && data.doctors.length > 0) {
+                    allDoctors = data.doctors;
+                    grid.innerHTML = data.doctors.map(doc => {
+                        const specialty = doc.specialty || 'Psychologue Clinicien';
+                        const bio = doc.bio || 'Spécialiste de la santé mentale dévoué à votre bien-être.';
+                        const profilePic = doc.profilePicture || `https://ui-avatars.com/api/?name=${doc.firstName}+${doc.lastName}&background=6366f1&color=fff`;
+
+                        return `
+                            <div class="service-card" style="text-align: center; border-radius: 20px; padding: 2.5rem 2rem; display: flex; flex-direction: column; align-items: center; transition: all 0.3s ease;">
+                                <div style="position: relative; margin-bottom: 1.5rem;">
+                                    <img src="${profilePic}" 
+                                         alt="${doc.firstName}" 
+                                         style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--white); box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+                                </div>
+                                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--text-dark);">Dr. ${doc.firstName} ${doc.lastName}</h3>
+                                <p style="color: var(--primary-color); font-weight: 600; font-size: 0.9rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.5px;">${specialty}</p>
+                                <p style="font-size: 0.95rem; color: var(--text-light); line-height: 1.6; margin-bottom: 2rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 4.8em;">
+                                    ${bio}
+                                </p>
+                                <div style="display: flex; gap: 0.5rem; width: 100%; margin-top: auto;">
+                                    <button onclick="openDoctorProfile('${doc._id}')" 
+                                             class="btn-secondary" 
+                                             style="flex: 1; padding: 0.8rem; border-radius: 50px; font-weight: 600;">
+                                        Profil
+                                    </button>
+                                    <button onclick="contactDoctor('${doc._id}', '${doc.firstName} ${doc.lastName}')" 
+                                             class="btn-primary" 
+                                             style="flex: 1.5; padding: 0.8rem; border-radius: 50px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                        <span>Contacter</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun spécialiste disponible pour le moment.</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('doctorsGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--error-color);">Impossible de charger la liste des spécialistes.</p>';
+            }
+        }
+
+        async function openDoctorProfile(doctorId) {
+            const doctor = allDoctors.find(d => d._id === doctorId);
+            if (!doctor) return;
+
+            document.getElementById('modalDoctorName').textContent = `Dr. ${doctor.firstName} ${doctor.lastName}`;
+            document.getElementById('modalDoctorSpecialty').textContent = doctor.specialty || 'Psychologue Clinicien';
+            document.getElementById('modalDoctorBio').textContent = doctor.bio || 'Aucune biographie disponible.';
+
+            const docsContainer = document.getElementById('modalDoctorDocs');
+            docsContainer.innerHTML = '';
+
+            if (doctor.certification) {
+                docsContainer.innerHTML += createDocButton('Certification / Diplôme', '📄', doctor.certification);
+            }
+            if (doctor.cv) {
+                docsContainer.innerHTML += createDocButton('Curriculum Vitae (CV)', '💼', doctor.cv);
+            }
+
+            if (!doctor.certification && !doctor.cv) {
+                docsContainer.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem; font-style: italic;">Aucun document disponible.</p>';
+            }
+
+            document.getElementById('modalContactBtn').onclick = () => {
+                closeDoctorProfile();
+                contactDoctor(doctor._id, `${doctor.firstName} ${doctor.lastName}`);
+            };
+
+            document.getElementById('doctorProfileModal').style.display = 'flex';
+        }
+
+        function createDocButton(title, icon, base64) {
+            return `
+                <div class="doc-btn" onclick="viewDocument('${base64}')">
+                    <span class="icon">${icon}</span>
+                    <div class="details">
+                        <span class="title">${title}</span>
+                        <span class="action">Cliquer pour voir le document</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function viewDocument(base64) {
+            const win = window.open();
+            win.document.write('<iframe src="' + base64 + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+        }
+
+        function closeDoctorProfile() {
+            document.getElementById('doctorProfileModal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        function contactDoctor(id, name) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('Veuillez vous connecter pour contacter un médecin.', 'info');
+                setTimeout(() => window.location.href = 'login.html', 2000);
+                return;
+            }
+            localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
+            window.location.href = 'patient-chat.html';
+        }
+
+        function handleStartConsultation() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const element = document.getElementById('specialistes');
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            } else {
+                window.location.href = 'register.html';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
             const userStr = localStorage.getItem('user');
-            const API_URL = 'http://localhost:3001/api';
+            // const API_URL = '/api'; // Removed as it's not used in this block anymore
+
+            // Mobile Menu Toggle
+            const menu = document.querySelector('#mobile-menu');
+            const menuLinks = document.querySelector('.nav-links');
+            const navAuth = document.querySelector('.nav-auth');
+
+            menu.addEventListener('click', () => {
+                menu.classList.toggle('active');
+                menuLinks.classList.toggle('active');
+                navAuth.classList.toggle('active');
+            });
+
+            // Close mobile menu when a link is clicked
+            document.querySelectorAll('.nav-links a').forEach(n => n.addEventListener('click', () => {
+                menu.classList.remove('active');
+                menuLinks.classList.remove('active');
+                navAuth.classList.remove('active');
+            }));
 
             // Auth State
             if (token && userStr) {
@@ -611,206 +1009,16 @@
 
             // Fetch Doctors
             fetchDoctors();
-
-            async function fetchDoctors() {
-                try {
-                    const response = await fetch(`${API_URL}/patient/doctors`);
-                    const data = await response.json();
-
-                    const grid = document.getElementById('doctorsGrid');
-
-                    if (data.success && data.doctors.length > 0) {
-                        grid.innerHTML = data.doctors.map(doc => `
-                            <div class="service-card" style="text-align: center; border-radius: 12px; padding: 2rem;">
-                                <img src="https://ui-avatars.com/api/?name=${doc.firstName}+${doc.lastName}&background=6366f1&color=fff" 
-                                     alt="${doc.firstName}" 
-                                     style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover;">
-                                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Dr. ${doc.firstName} ${doc.lastName}</h3>
-                                <p style="color: var(--primary-color); font-weight: 500; margin-bottom: 1rem;">Psychologue Clinicien</p>
-                                <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Spécialiste en thérapie cognitive et comportementale.</p>
-                                <button onclick="contactDoctor('${doc._id}', '${doc.firstName} ${doc.lastName}')" 
-                                        class="btn-primary" 
-                                        style="width: 100%; padding: 0.75rem; font-size: 0.9rem;">
-                                    Contacter
-                                </button>
-                            </div>
-                        `).join('');
-                    } else {
-                        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun spécialiste disponible pour le moment.</p>';
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    document.getElementById('doctorsGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--error-color);">Impossible de charger la liste des spécialistes.</p>';
-                }
-            }
         });
 
-        function contactDoctor(id, name) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                // If not logged in, redirect to login
-                alert('Veuillez vous connecter pour contacter un médecin.');
-                window.location.href = 'login.html';
-                return;
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('doctorProfileModal');
+            if (event.target == modal) {
+                closeDoctorProfile();
             }
-            // If logged in, go to chat
-            localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
-            window.location.href = 'patient-chat.html';
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
-    </script>
-
-    <!-- Hero Section -->
-    <section class="hero" id="accueil">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 data-i18n="hero.title">Votre bien-être mental, <br><span class="highlight"
-                        data-i18n="hero.title_highlight">notre priorité</span></h1>
-                <p data-i18n="hero.subtitle">Découvrez un espace d'écoute et de soutien avec des professionnels
-                    qualifiés. Consultez depuis chez
-                    vous, en toute sécurité.</p>
-                <div class="hero-buttons">
-                    <button class="btn-primary" onclick="window.location.href='register.html'"
-                        data-i18n="hero.btn_start">Commencer ma
-                        consultation</button>
-                    <button class="btn-secondary" onclick="window.location.href='#services'"
-                        data-i18n="hero.btn_how">Comment ça marche</button>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop"
-                    alt="Psychologue professionnel">
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="services" id="services">
-        <div class="section-header">
-            <h2 data-i18n="sections.services">Nos Services</h2>
-            <p>Des solutions adaptées à vos besoins pour votre bien-être mental</p>
-        </div>
-        <div class="services-grid">
-            <div class="service-card">
-                <div class="service-icon">🧠</div>
-                <h3>Thérapie Individuelle</h3>
-                <p>Un accompagnement personnalisé avec des psychologues qualifiés pour vous aider à surmonter vos défis
-                    personnels et atteindre vos objectifs de bien-être.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">💑</div>
-                <h3>Thérapie de Couple</h3>
-                <p>Renforcez votre relation et améliorez votre communication grâce à nos séances de thérapie de couple
-                    avec des spécialistes expérimentés.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">👨‍👩‍👧‍👦</div>
-                <h3>Thérapie Familiale</h3>
-                <p>Créez un environnement familial harmonieux et résolvez les conflits avec l'aide de nos thérapeutes
-                    familiaux professionnels.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Doctors Section -->
-    <section class="doctors" id="specialistes" style="padding: 6rem 2rem; background: var(--bg-light);">
-        <div class="section-header">
-            <h2 data-i18n="sections.specialists">Nos Spécialistes</h2>
-            <p>Rencontrez nos psychologues qualifiés prêts à vous écouter</p>
-        </div>
-        <div class="services-grid" id="doctorsGrid"
-            style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-            <!-- Doctors will be loaded here -->
-            <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Chargement des spécialistes...
-            </p>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="about" id="apropos">
-        <div class="about-container">
-            <div class="about-image">
-                <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&h=600&fit=crop"
-                    alt="Équipe PsyConnect">
-            </div>
-            <div class="about-content">
-                <h2>À Propos de PsyConnect</h2>
-                <p>PsyConnect est une plateforme innovante qui facilite l'accès aux soins psychologiques de qualité.
-                    Notre mission est de rendre le soutien psychologique accessible à tous, partout et à tout moment.
-                </p>
-                <p>Nous collaborons avec des psychologues certifiés et expérimentés qui s'engagent à vous offrir un
-                    accompagnement professionnel, confidentiel et bienveillant.</p>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Patients Satisfaits</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">50+</div>
-                        <div class="stat-label">Psychologues</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Taux de Satisfaction</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer" id="contact">
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h3>PsyConnect</h3>
-                <p>Votre partenaire de confiance pour votre bien-être mental. Ensemble, construisons un avenir plus
-                    serein.</p>
-                <div class="social-links">
-                    <div class="social-icon">📘</div>
-                    <div class="social-icon">📷</div>
-                    <div class="social-icon">🐦</div>
-                    <div class="social-icon">💼</div>
-                </div>
-            </div>
-            <div class="footer-links">
-                <h4>Services</h4>
-                <ul>
-                    <li><a href="#">Thérapie Individuelle</a></li>
-                    <li><a href="#">Thérapie de Couple</a></li>
-                    <li><a href="#">Thérapie Familiale</a></li>
-                    <li><a href="#">Consultation en ligne</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Entreprise</h4>
-                <ul>
-                    <li><a href="#">À Propos</a></li>
-                    <li><a href="#">Notre Équipe</a></li>
-                    <li><a href="#">Carrières</a></li>
-                    <li><a href="#">Blog</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Support</h4>
-                <ul>
-                    <li><a href="#">Centre d'aide</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Confidentialité</a></li>
-                    <li><a href="#">Conditions</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 PsyConnect. Tous droits réservés. Made with ❤️ by **Yassine Kadri**.</p>
-        </div>
-    </footer>
-
-    <script>
         // Navbar scroll effect
         window.addEventListener('scroll', function () {
             const navbar = document.getElementById('navbar');
@@ -835,6 +1043,193 @@
             });
         });
     </script>
+
+    <!-- Hero Section -->
+    <section class="hero" id="accueil">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 data-i18n="hero.title">Votre bien-être mental, <br><span class="highlight"
+                        data-i18n="hero.title_highlight">notre priorité</span></h1>
+                <p data-i18n="hero.subtitle">Découvrez un espace d'écoute et de soutien avec des professionnels
+                    qualifiés. Consultez depuis chez
+                    vous, en toute sécurité.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="handleStartConsultation()" data-i18n="hero.btn_start">Commencer
+                        ma
+                        consultation</button>
+                    <button class="btn-secondary" onclick="window.location.href='#services'"
+                        data-i18n="hero.btn_how">Comment ça marche</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=600&h=600&fit=crop"
+                    alt="Psychologue professionnel">
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="section-header">
+            <h2 data-i18n="services.title">Nos Services</h2>
+            <p data-i18n="services.subtitle">Des solutions adaptées à vos besoins pour votre bien-être mental</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🧠</div>
+                <h3 data-i18n="services.individual_title">Thérapie Individuelle</h3>
+                <p data-i18n="services.individual_desc">Un accompagnement personnalisé avec des psychologues qualifiés
+                    pour vous aider à surmonter vos défis
+                    personnels et atteindre vos objectifs de bien-être.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">💑</div>
+                <h3 data-i18n="services.couple_title">Thérapie de Couple</h3>
+                <p data-i18n="services.couple_desc">Renforcez votre relation et améliorez votre communication grâce à
+                    nos séances de thérapie de couple
+                    avec des spécialistes expérimentés.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">👨‍👩‍👧‍👦</div>
+                <h3 data-i18n="services.family_title">Thérapie Familiale</h3>
+                <p data-i18n="services.family_desc">Créez un environnement familial harmonieux et résolvez les conflits
+                    avec l'aide de nos thérapeutes
+                    familiaux professionnels.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Doctors Section -->
+    <section class="doctors" id="specialistes" style="padding: 6rem 2rem; background: var(--bg-light);">
+        <div class="section-header">
+            <h2 data-i18n="sections.specialists">Nos Spécialistes</h2>
+            <p data-i18n="sections.specialists_subtitle">Rencontrez nos psychologues qualifiés prêts à vous écouter</p>
+        </div>
+        <div class="services-grid" id="doctorsGrid"
+            style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            <!-- Doctors will be loaded here -->
+            <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);" data-i18n="common.loading">
+                Chargement des spécialistes...
+            </p>
+        </div>
+    </section>
+
+
+
+    <!-- About Section -->
+    <section class="about" id="apropos">
+        <div class="about-container">
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=600&h=600&fit=crop"
+                    alt="Équipe PsyConnect">
+            </div>
+            <div class="about-content">
+                <h2 data-i18n="about.title">À Propos de PsyConnect</h2>
+                <p data-i18n="about.desc1">PsyConnect est une plateforme innovante qui facilite l'accès aux soins
+                    psychologiques de qualité.
+                    Notre mission est de rendre le soutien psychologique accessible à tous, partout et à tout moment.
+                </p>
+                <p data-i18n="about.desc2">Nous collaborons avec des psychologues certifiés et expérimentés qui
+                    s'engagent à vous offrir un
+                    accompagnement professionnel, confidentiel et bienveillant.</p>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label" data-i18n="about.stats.patients">Patients Satisfaits</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label" data-i18n="about.stats.psychologists">Psychologues</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label" data-i18n="about.stats.satisfaction">Taux de Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>PsyConnect</h3>
+                <p data-i18n="footer.brand_desc">Votre partenaire de confiance pour votre bien-être mental. Ensemble,
+                    construisons un avenir plus
+                    serein.</p>
+                <div class="social-links">
+                    <div class="social-icon">📘</div>
+                    <div class="social-icon">📷</div>
+                    <div class="social-icon">🐦</div>
+                    <div class="social-icon">💼</div>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4 data-i18n="nav.services">Services</h4>
+                <ul>
+                    <li><a href="#" data-i18n="services.individual_title">Thérapie Individuelle</a></li>
+                    <li><a href="#" data-i18n="services.couple_title">Thérapie de Couple</a></li>
+                    <li><a href="#" data-i18n="services.family_title">Thérapie Familiale</a></li>
+                    <li><a href="#" data-i18n="nav.services">Consultation en ligne</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4 data-i18n="footer.company">Entreprise</h4>
+                <ul>
+                    <li><a href="#" data-i18n="nav.apropos">À Propos</a></li>
+                    <li><a href="#">Notre Équipe</a></li>
+                    <li><a href="#">Carrières</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4 data-i18n="footer.support">Support</h4>
+                <ul>
+                    <li><a href="#">Centre d'aide</a></li>
+                    <li><a href="#" data-i18n="nav.contact">Contact</a></li>
+                    <li><a href="#">Confidentialité</a></li>
+                    <li><a href="#">Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 PsyConnect. <span data-i18n="footer.rights">Tous droits réservés.</span> <span
+                    data-i18n="footer.made_with">Made with ❤️ by Yassine Kadri.</span></p>
+        </div>
+    </footer>
+
+    <!-- Doctor Profile Modal -->
+    <div id="doctorProfileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="modalDoctorName" style="font-size: 1.5rem; margin-bottom: 0.25rem;">Dr. Name</h3>
+                    <p id="modalDoctorSpecialty" style="font-size: 0.9rem; opacity: 0.9;">Specialty</p>
+                </div>
+                <button onclick="closeDoctorProfile()" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="doc-section">
+                    <h4><span class="icon">📝</span> <span data-i18n="profile.bio">Bio Professionnelle</span></h4>
+                    <p id="modalDoctorBio" style="color: var(--text-light); line-height: 1.6;"></p>
+                </div>
+
+                <div class="doc-section">
+                    <h4><span class="icon">🎓</span> <span data-i18n="profile.professional_docs">Qualifications &
+                            Documents</span></h4>
+                    <div id="modalDoctorDocs">
+                        <!-- Doc buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDoctorProfile()" class="btn-secondary"
+                    style="padding: 0.75rem 1.5rem;">Fermer</button>
+                <button id="modalContactBtn" class="btn-primary" style="padding: 0.75rem 2rem;">Contacter</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

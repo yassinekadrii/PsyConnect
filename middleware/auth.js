@@ -1,3 +1,14 @@
+/**
+ * @file middleware/auth.js
+ * @description Middleware functions for authentication and role-based access control (RBAC).
+ * 
+ * Provides:
+ * - auth: Verifies JWT token and attaches user to request
+ * - isAdmin: Restricted to users with 'admin' role
+ * - isDoctor: Restricted to users with 'doctor' or 'admin' roles
+ * - isSuperAdmin: Restricted to users flagged as super admins
+ */
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 

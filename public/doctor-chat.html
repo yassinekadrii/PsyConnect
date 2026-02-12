@@ -1,3 +1,12 @@
+<!-- 
+  @file public/doctor-chat.html
+  @description Doctor-side interface for real-time consultation and patient communication.
+  
+  Integrates:
+  - Socket.io for messaging
+  - WebRTC for video calls
+  - Prescription management
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -7,131 +16,217 @@
     <title>Mes Patients - PsyConnect</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/i18n.js"></script>
+    <script src="js/notifications.js"></script>
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #10b981;
+            --bg-body: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-blur: blur(12px);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #6366f1;
-            --bg-light: #f8fafc;
-            --white: #ffffff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --chat-bg: #e0e7ff;
-            --my-msg-bg: #6366f1;
-            --their-msg-bg: #f1f5f9;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
+        /* Modern Navbar */
         .navbar {
-            background: var(--white);
-            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            height: 70px;
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            z-index: 100;
+            position: sticky;
+            top: 0;
         }
 
         .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--primary);
             text-decoration: none;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .logo::before {
+            content: "✚";
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Container */
         .container {
             display: flex;
             flex: 1;
             overflow: hidden;
-            max-width: 1600px;
-            margin: 0 auto;
             width: 100%;
+            position: relative;
         }
 
         /* Sidebar - Patient List */
         .sidebar {
-            width: 350px;
+            width: 320px;
             background: var(--white);
-            border-right: 1px solid var(--border-color);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90;
         }
 
-        .search-bar {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
+        .sidebar-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-wrapper {
+            position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-light);
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
         }
 
         .patient-list {
             flex: 1;
             overflow-y: auto;
+            scrollbar-width: thin;
         }
 
         .patient-item {
             display: flex;
             align-items: center;
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             cursor: pointer;
-            transition: background 0.2s;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+            gap: 1rem;
         }
 
-        .patient-item:hover,
+        .patient-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
         .patient-item.active {
-            background: var(--bg-light);
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
         }
 
         .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #ddd;
-            margin-right: 1rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e2e8f0;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .patient-info {
             flex: 1;
+            min-width: 0;
         }
 
-        .patient-name {
+        .patient-title {
             font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .last-msg {
             font-size: 0.85rem;
-            color: var(--text-light);
+            color: var(--text-muted);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 200px;
-        }
-
-        .msg-time {
-            font-size: 0.75rem;
-            color: var(--text-light);
         }
 
         /* Chat Area */
@@ -139,124 +234,351 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #fff;
+            background: #f8fafc;
+            position: relative;
         }
 
         .chat-header {
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            z-index: 10;
         }
 
-        .header-info {
+        .header-main {
             display: flex;
             align-items: center;
+            gap: 1rem;
         }
 
-        .video-call-btn {
-            background: var(--primary-color);
-            color: var(--white);
+        #toggleSidebar {
+            display: none;
+            background: none;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
             cursor: pointer;
+            color: var(--text-main);
+            padding: 0.5rem;
+            margin-right: 0.5rem;
+            line-height: 1;
+        }
+
+        .header-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-text h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-text h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: transform 0.2s;
+            padding: 0.6rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: var(--shadow-sm);
         }
 
-        .video-call-btn:hover {
-            transform: scale(1.05);
+        #prescriptionBtn {
+            background: #ecfdf5;
+            color: #059669;
         }
 
+        #videoCallBtn {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Messages */
         .messages-container {
             flex: 1;
-            padding: 2rem;
+            padding: 1.5rem;
             overflow-y: auto;
-            background-color: #f0f2f5;
-            /* WhatsApp-like bg */
-            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
-            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f1f5f9;
         }
 
         .message {
-            max-width: 60%;
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            position: relative;
+            max-width: 75%;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
             font-size: 0.95rem;
             line-height: 1.5;
+            animation: fadeIn 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.received {
             background: var(--white);
             align-self: flex-start;
-            border-top-left-radius: 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
         .message.sent {
-            background: #dcf8c6;
+            background: var(--primary);
+            color: var(--white);
             align-self: flex-end;
-            border-top-right-radius: 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
 
-        .message-time {
-            font-size: 0.7rem;
-            color: #999;
-            float: right;
-            margin-left: 0.5rem;
-            margin-top: 0.25rem;
-        }
-
+        /* Input Area */
         .input-area {
-            padding: 1rem 2rem;
+            padding: 1.25rem 1.5rem;
             background: var(--white);
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 1rem;
+            align-items: center;
+        }
+
+        .msg-input-wrapper {
+            flex: 1;
         }
 
         .msg-input {
-            flex: 1;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
+            width: 100%;
+            padding: 0.85rem 1.25rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
             outline: none;
+            font-size: 0.95rem;
         }
 
         .send-btn {
-            background: transparent;
+            background: var(--primary);
+            color: white;
             border: none;
-            color: var(--primary-color);
-            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
         }
 
-        /* Empty State */
-        .no-chat-selected {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 200;
             justify-content: center;
-            color: var(--text-light);
-            background: #f0f2f5;
+            align-items: center;
+            padding: 1rem;
         }
 
-        .no-chat-icon {
-            font-size: 4rem;
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .medicine-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
             margin-bottom: 1rem;
-            opacity: 0.5;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input,
+        .medicine-item input[type="text"]:not(.input-group input) {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 768px) {
+            .navbar {
+                display: none;
+            }
+
+            .container {
+                height: 100vh;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: 10px 0 15px rgba(0, 0, 0, 0.05);
+                z-index: 1000;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+                z-index: 1000;
+            }
+
+            #toggleSidebar {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .chat-header {
+                padding: 0.75rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .header-main {
+                flex: 1;
+                min-width: 0;
+                gap: 0.8rem;
+                /* A bit more space for doctor side menu button */
+            }
+
+            .avatar#currentAvatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+            }
+
+            .header-text h3 {
+                font-size: 0.9rem;
+            }
+
+            .btn-action span:not(.icon) {
+                display: none;
+            }
+
+            .btn-action {
+                padding: 0.65rem 0.85rem;
+                min-width: 38px;
+                height: 36px;
+                justify-content: center;
+                border-radius: 8px;
+            }
+        }
+
+        .sidebar {
+            z-index: 100;
+        }
+
+        .sidebar-overlay {
+            z-index: 95;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 85;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav-header {
+                display: flex !important;
+            }
+
+            .sidebar-header {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .search-wrapper {
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
@@ -264,32 +586,47 @@
 <body>
     <nav class="navbar">
         <a href="index.html" class="logo">PsyConnect</a>
-        <div style="display: flex; gap: 2rem; align-items: center;">
-            <div>
-                <button class="lang-btn" onclick="toggleLanguage()" id="langSwitcher"
-                    style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
-            </div>
-            <div style="display: flex; gap: 1.5rem; align-items: center;">
-                <a href="index.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500;"
-                    data-i18n="nav.accueil">Accueil</a>
-                <a href="profile.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500;"
-                    data-i18n="nav.profile">Profil</a>
-                <button onclick="logout()"
-                    style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer;"
-                    data-i18n="nav.logout">Déconnexion</button>
-            </div>
+        <div class="nav-links">
+            <a href="index.html" data-i18n="nav.accueil">Accueil</a>
+            <a href="profile.html" data-i18n="nav.profile">Profil</a>
+            <button onclick="logout()" class="btn-logout" data-i18n="nav.logout">Déconnexion</button>
         </div>
     </nav>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="search-bar">
-                <input type="text" class="search-input" placeholder="Rechercher un patient..."
-                    data-i18n="chat.sidebar.search">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <!-- Mobile Only Logo & Navigation -->
+                <div class="mobile-nav-header" style="display: none; flex-direction: column; gap: 1rem; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <a href="index.html" class="logo" style="margin: 0;">PsyConnect</a>
+                        <button onclick="toggleSidebar()" class="close-modal">&times;</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="index.html"
+                            style="text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🏠</span> <span data-i18n="nav.accueil">Accueil</span>
+                        </a>
+                        <button onclick="logout()" class="btn-logout"
+                            style="width: 100%; justify-content: flex-start; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                            <span>🚪</span> <span data-i18n="nav.logout">Déconnexion</span>
+                        </button>
+                    </div>
+                    <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
+                </div>
+
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Rechercher un patient..."
+                        data-i18n="chat.sidebar.search" id="patientSearch">
+                </div>
             </div>
             <div class="patient-list" id="patientList">
-                <div style="padding: 1rem; color: var(--text-light); text-align: center;">Chargement des discussions...
+                <div style="padding: 2rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">
+                    Chargement...
                 </div>
             </div>
         </div>
@@ -297,112 +634,151 @@
         <!-- Chat Area -->
         <div class="chat-area" id="chatArea">
             <div class="chat-header">
-                <div class="header-info">
+                <div class="header-main">
+                    <button id="toggleSidebar" onclick="toggleSidebar()">
+                        <span style="font-size: 1.5rem;">☰</span>
+                    </button>
                     <img src="https://ui-avatars.com/api/?name=Patient&background=random" alt="Patient" class="avatar"
                         id="currentAvatar" style="opacity: 0.5;">
-                    <div>
-                        <h3 id="chatPatientName">Sélectionnez un patient</h3>
-                        <span style="color: var(--text-light); font-size: 0.85rem;">En attente...</span>
+                    <div class="header-text">
+                        <h3 id="chatPatientName">Sélect. un patient</h3>
+                        <span id="statusText" style="color: var(--text-muted); font-size: 0.8rem;">En attente...</span>
                     </div>
                 </div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button id="prescriptionBtn" onclick="openPrescriptionModal()"
-                        style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                        <span>📜</span> <span data-i18n="chat.header.add_prescription">Ordonnance</span>
+                <div class="header-actions">
+
+                    <button id="prescriptionBtn" class="btn-action" onclick="openPrescriptionModal()"
+                        style="display: none;">
+                        <span class="icon">📜</span> <span data-i18n="chat.header.add_prescription">Ordonnance</span>
                     </button>
-                    <button class="video-call-btn" onclick="startVideoCall()">
-                        📹 Appel Vidéo
+                    <button class="btn-action" id="videoCallBtn" onclick="startVideoCall()" style="display: none;">
+                        <span class="icon">📹</span> <span data-i18n="chat.header.video_call">Vidéo</span>
                     </button>
                 </div>
             </div>
 
             <div class="messages-container" id="messagesContainer">
                 <div class="no-chat-selected">
-                    <div class="no-chat-icon">💬</div>
-                    <h3>Sélectionnez un patient</h3>
-                    <p>Choisissez une conversation dans la liste pour voir les messages.</p>
+                    <div style="font-size: 4rem; opacity: 0.2;">💬</div>
+                    <h3 data-i18n="chat.sidebar.no_patients">Gestion des patients</h3>
+                    <p style="text-align: center; max-width: 250px; font-size: 0.9rem; margin-top: 0.5rem;"
+                        data-i18n="chat.sidebar.no_patients">Sélectionnez un patient pour démarrer la consultation.</p>
                 </div>
             </div>
 
             <div class="input-area">
-                <input type="text" class="msg-input" placeholder="Écrivez un message..." id="messageInput"
-                    onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()">➤</button>
+                <div class="msg-input-wrapper">
+                    <input type="text" class="msg-input" placeholder="Écrivez un message..." id="messageInput"
+                        onkeypress="handleKeyPress(event)" disabled data-i18n="chat.form.placeholder">
+                </div>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Video Call Modal -->
-    <div id="videoModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;">
-        <div
-            style="position: relative; width: 80%; max-width: 800px; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
-            <video id="remoteVideo" autoplay playsinline
-                style="width: 100%; height: 100%; object-fit: cover; background: #222;"></video>
-            <video id="localVideo" autoplay playsinline muted
-                style="position: absolute; bottom: 20px; right: 20px; width: 160px; height: 90px; object-fit: cover; border: 2px solid white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); background: #333;"></video>
-            <div
-                style="position: absolute; bottom: 20px; left: 20px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">
-                En attente de connexion...
+    <!-- Video Modal unchanged but wrapped in same overlay style -->
+    <div id="videoModal" class="modal-overlay" style="background: rgba(0,0,0,0.9);">
+        <div class="modal-content" style="background: #000; border: none; max-width: 900px;">
+            <div style="position: relative; width: 100%; height: 100%; aspect-ratio: 16/9;">
+                <video id="remoteVideo" autoplay playsinline
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"></video>
+                <video id="localVideo" autoplay playsinline muted
+                    style="position: absolute; bottom: 20px; right: 20px; width: 160px; height: 90px; border: 2px solid white; border-radius: 8px;"></video>
+            </div>
+            <div style="padding: 1.5rem; display: flex; justify-content: center; gap: 1rem;">
+                <button id="screenShareBtn" onclick="handleScreenShare()" class="btn-action"
+                    style="padding: 1rem 2rem; border-radius: 50px; background: var(--primary); color: white;">
+                    <span class="icon">🖥️</span> <span data-i18n="chat.header.share_screen">Partager l'écran</span>
+                </button>
+                <button onclick="endCall()" class="btn-logout" style="padding: 1rem 2.5rem; border-radius: 50px;"
+                    data-i18n="nav.logout">Raccrocher</button>
             </div>
         </div>
-        <button onclick="endCall()"
-            style="margin-top: 2rem; background: #ef4444; color: white; padding: 1rem 2rem; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: 600; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); transition: transform 0.2s; display: flex; align-items: center; gap: 0.5rem;">
-            <span>❌</span> Raccrocher
-        </button>
     </div>
 
-    <!-- Prescription Modal -->
-    <div id="prescriptionModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center;">
-        <div
-            style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h2 style="margin-bottom: 1.5rem; color: var(--text-dark);"><span data-i18n="chat.prescription.title">📜
-                    Nouvelle Ordonnance</span></h2>
-            <div id="medicinesList">
-                <div class="medicine-item"
-                    style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" placeholder="Médicament" data-i18n="chat.prescription.medicine_name"
-                            style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                        <input type="text" placeholder="Dosage" data-i18n="chat.prescription.dosage"
-                            style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                        <input type="text" placeholder="Durée" data-i18n="chat.prescription.duration"
-                            style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+    <!-- Prescription Modal Redesigned -->
+    <div id="prescriptionModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="chat.prescription.title">📜 Nouvelle Ordonnance</h3>
+                <button onclick="closePrescriptionModal()" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="medicinesList">
+                    <div class="medicine-item">
+                        <div class="input-group">
+                            <input type="text" placeholder="Médicament" data-i18n="chat.prescription.medicine_name">
+                            <input type="text" placeholder="Dosage" data-i18n="chat.prescription.dosage">
+                            <input type="text" placeholder="Durée" data-i18n="chat.prescription.duration">
+                        </div>
+                        <input type="text" placeholder="Notes additionnelles" data-i18n="chat.prescription.notes"
+                            style="margin-top: 0.5rem;">
                     </div>
-                    <input type="text" placeholder="Notes (ex: matin et soir, après le repas)"
-                        data-i18n="chat.prescription.notes"
-                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                </div>
+                <button onclick="addMedicineRow()"
+                    style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; margin-bottom: 1.5rem;"
+                    data-i18n="chat.prescription.add_medicine">+ Ajouter</button>
+                <textarea id="prescriptionInstructions" placeholder="Instructions (ex: repos, examens...)"
+                    data-i18n="chat.prescription.instructions"
+                    style="width: 100%; height: 80px; padding: 0.75rem; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1rem; outline: none;"></textarea>
+
+                <div
+                    style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f9ff; border-radius: 12px; border: 1px dashed #7dd3fc;">
+                    <label style="display: block; font-weight: 600; color: #0369a1; margin-bottom: 0.5rem;">Alternative
+                        : Télécharger PDF</label>
+                    <input type="file" id="prescriptionPdf" accept="application/pdf"
+                        onchange="handlePrescriptionPdfUpload(event)" style="font-size: 0.85rem;">
+                    <div id="pdfUploadStatus"
+                        style="margin-top: 0.5rem; font-size: 0.8rem; color: #0369a1; display: none;">✅ PDF prêt à être
+                        envoyé</div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button onclick="closePrescriptionModal()" class="btn-action"
+                        style="background: #f1f5f9; color: var(--text-main);" data-i18n="common.cancel">Annuler</button>
+                    <button onclick="submitPrescription()" class="btn-action"
+                        style="background: var(--primary); color: white;" data-i18n="chat.form.send">Envoyer</button>
                 </div>
             </div>
-            <button onclick="addMedicineRow()"
-                style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 500; margin-bottom: 1rem; padding: 0.5rem 0;">+
-                <span data-i18n="chat.prescription.add_medicine">Ajouter un médicament</span></button>
-            <textarea id="prescriptionInstructions" placeholder="Instructions supplémentaires (optionnel)"
-                data-i18n="chat.prescription.instructions"
-                style="width: 100%; height: 80px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 1.5rem;"></textarea>
-            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
-                <button onclick="closePrescriptionModal()"
-                    style="padding: 0.75rem 1.5rem; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer;"
-                    data-i18n="nav.accueil">Annuler</button>
-                <button onclick="submitPrescription()"
-                    style="padding: 0.75rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;"
-                    data-i18n="chat.prescription.save">Envoyer</button>
-            </div>
         </div>
     </div>
+
+
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/webrtc.js"></script>
     <script>
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
         let currentPatientId = null;
+        let currentMessagesCount = 0;
+        let lastMessageId = null;
 
         if (!token || user.role !== 'doctor') {
             window.location.href = 'login.html';
         }
+
+        // Toggle Sidebar for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        // Patient Search Logic
+        document.getElementById('patientSearch')?.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.patient-item');
+            items.forEach(item => {
+                const name = item.querySelector('.patient-title').textContent.toLowerCase();
+                item.style.display = name.includes(term) ? 'flex' : 'none';
+            });
+        });
 
         // ... (fetchConversations, setInterval same as before) ...
         // Fetch conversations/patients on load
@@ -430,12 +806,12 @@
                         div.className = `patient-item ${currentPatientId === conv.user._id ? 'active' : ''}`;
                         div.onclick = () => selectPatient(conv.user);
 
+                        const avatarSrc = conv.user.profilePicture || `https://ui-avatars.com/api/?name=${conv.user.firstName}+${conv.user.lastName}&background=random`;
                         div.innerHTML = `
-                            <img src="https://ui-avatars.com/api/?name=${conv.user.firstName}+${conv.user.lastName}&background=random" alt="Patient" class="avatar">
+                            <img src="${avatarSrc}" alt="Patient" class="avatar">
                             <div class="patient-info">
-                                <div class="patient-name">${conv.user.firstName} ${conv.user.lastName}</div>
+                                <div class="patient-title">${conv.user.firstName} ${conv.user.lastName}</div>
                                 <div class="last-msg">${conv.lastMessage.substring(0, 30)}${conv.lastMessage.length > 30 ? '...' : ''}</div>
-                                <div class="msg-time">${new Date(conv.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                             </div>
                         `;
                         list.appendChild(div);
@@ -449,19 +825,34 @@
         function selectPatient(patient) {
             currentPatientId = patient._id;
 
+            // Reset message tracking when switching patients
+            currentMessagesCount = 0;
+            lastMessageId = null;
+            document.getElementById('messagesContainer').innerHTML = '';
             // Update Header
             document.getElementById('chatPatientName').textContent = `${patient.firstName} ${patient.lastName}`;
-            document.getElementById('currentAvatar').src = `https://ui-avatars.com/api/?name=${patient.firstName}+${patient.lastName}&background=random`; // Fixed ID here
+            const avatarSrc = patient.profilePicture || `https://ui-avatars.com/api/?name=${patient.firstName}+${patient.lastName}&background=random`;
+            document.getElementById('currentAvatar').src = avatarSrc;
+            document.getElementById('currentAvatar').style.opacity = '1';
 
-            // Update UI active state
-            fetchConversations(); // Re-render list to show active state
+            // Show Buttons
+            document.getElementById('videoCallBtn').style.display = 'flex';
+            document.getElementById('prescriptionBtn').style.display = 'flex';
+
+            // Enable inputs
+            document.getElementById('messageInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            document.getElementById('messageInput').focus();
 
             // Load messages
             loadMessages(patient._id);
 
-            // Clear input
-            document.getElementById('messageInput').value = '';
-            document.getElementById('messageInput').focus();
+            // Hide sidebar on mobile after selection
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            fetchConversations();
         }
 
         async function loadMessages(patientId) {
@@ -473,26 +864,48 @@
 
                 if (data.success) {
                     const container = document.getElementById('messagesContainer');
-                    const wasAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
 
-                    container.innerHTML = '';
+                    if (data.messages.length === 0) {
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Aucun message...</div>';
+                        currentMessagesCount = 0;
+                        lastMessageId = null;
+                        return;
+                    }
 
-                    data.messages.forEach(msg => {
-                        const div = document.createElement('div');
-                        // Fix for user.id logic - assuming user._id is present
-                        const userId = user.id || user._id;
-                        div.className = `message ${msg.sender === userId ? 'sent' : 'received'}`;
-                        div.textContent = msg.content;
-                        container.appendChild(div);
-                    });
+                    const newLastMsg = data.messages[data.messages.length - 1];
+                    const newLastId = newLastMsg._id || newLastMsg.id;
 
-                    // Maintain scroll position if user is reading up, else scroll to bottom
-                    // For simplicity, just scroll to bottom for now as it's a chat
+                    // If same count and same last ID, skip update
+                    if (data.messages.length === currentMessagesCount && newLastId === lastMessageId) {
+                        return;
+                    }
+
+                    // If it's a new conversation or messages were deleted (less than current), rebuild
+                    if (currentMessagesCount === 0 || data.messages.length < currentMessagesCount) {
+                        container.innerHTML = '';
+                        data.messages.forEach(msg => appendMessageElement(container, msg));
+                    } else {
+                        // Append only new messages
+                        const newMessages = data.messages.slice(currentMessagesCount);
+                        newMessages.forEach(msg => appendMessageElement(container, msg));
+                    }
+
+                    currentMessagesCount = data.messages.length;
+                    lastMessageId = newLastId;
                     container.scrollTop = container.scrollHeight;
                 }
             } catch (error) {
                 console.error('Error loading messages:', error);
             }
+        }
+
+        function appendMessageElement(container, msg) {
+            const div = document.createElement('div');
+            const myId = (user.id || user._id || '').toString();
+            const senderId = (msg.sender._id || msg.sender || '').toString();
+            div.className = `message ${senderId === myId ? 'sent' : 'received'}`;
+            div.textContent = msg.content;
+            container.appendChild(div);
         }
 
         async function sendMessage() {
@@ -519,7 +932,7 @@
                     }
                 } catch (error) {
                     console.error('Error sending message:', error);
-                    alert('Erreur lors de l\'envoi du message');
+                    showNotification('Erreur lors de l\'envoi du message', 'error');
                 }
             }
         }
@@ -530,7 +943,7 @@
 
         function startVideoCall() {
             if (!currentPatientId) {
-                alert('Veuillez d\'abord sélectionner un patient.');
+                showNotification('Veuillez d\'abord sélectionner un patient.', 'info');
                 return;
             }
 
@@ -539,17 +952,55 @@
             const participants = [userId, currentPatientId].sort();
             const roomId = participants.join('-');
 
+            // Notify patient that call is starting
+            socket.emit('start-call', { roomId });
+
+            document.getElementById('statusText').innerHTML = '<span class="status-dot" style="background: #10b981;"></span>Appel en cours...';
+
             startVideoCallSession(roomId, userId);
         }
 
         function endCall() {
+            document.getElementById('statusText').innerHTML = '<span class="status-dot"></span>En ligne';
             endCallSession();
+
+            // Reset screen share button UI if needed
+            const btn = document.getElementById('screenShareBtn');
+            if (btn) {
+                btn.querySelector('[data-i18n]').setAttribute('data-i18n', 'chat.header.share_screen');
+                btn.style.background = 'var(--primary)';
+            }
+        }
+
+        async function handleScreenShare() {
+            const btn = document.getElementById('screenShareBtn');
+            const result = await toggleScreenShare();
+
+            if (result === true) {
+                // Sharing started
+                btn.querySelector('[data-i18n]').setAttribute('data-i18n', 'chat.header.stop_sharing');
+                btn.style.background = '#ef4444'; // Red for stop
+            } else if (result === false) {
+                // Sharing stopped
+                btn.querySelector('[data-i18n]').setAttribute('data-i18n', 'chat.header.share_screen');
+                btn.style.background = 'var(--primary)';
+            }
+            // Trigger i18n update
+            if (typeof applyLanguage === 'function' && typeof currentLang !== 'undefined') {
+                applyLanguage(currentLang);
+            } else {
+                // Fallback: reload i18n or just trust the attribute change will be picked up by the next manual switch
+                // For now, let's manually update text if i18n isn't accessible
+                const span = btn.querySelector('[data-i18n]');
+                if (result === true) span.innerText = "Arrêter le partage";
+                else span.innerText = "Partager l'écran";
+            }
         }
 
         // Prescription Functions
         function openPrescriptionModal() {
             if (!currentPatientId) {
-                alert('Veuillez sélectionner un patient.');
+                showNotification('Veuillez sélectionner un patient.', 'info');
                 return;
             }
             document.getElementById('prescriptionModal').style.display = 'flex';
@@ -559,29 +1010,49 @@
             document.getElementById('prescriptionModal').style.display = 'none';
             // Clear inputs
             document.getElementById('medicinesList').innerHTML = `
-                <div class="medicine-item" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" placeholder="Médicament" style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                        <input type="text" placeholder="Dosage" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                        <input type="text" placeholder="Durée" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                <div class="medicine-item">
+                    <div class="input-group">
+                        <input type="text" placeholder="Médicament" data-i18n="chat.prescription.medicine_name">
+                        <input type="text" placeholder="Dosage" data-i18n="chat.prescription.dosage">
+                        <input type="text" placeholder="Durée" data-i18n="chat.prescription.duration">
                     </div>
-                    <input type="text" placeholder="Notes (ex: matin et soir, après le repas)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                    <input type="text" placeholder="Notes additionnelles" data-i18n="chat.prescription.notes" style="margin-top: 0.5rem;">
                 </div>
             `;
             document.getElementById('prescriptionInstructions').value = '';
+            document.getElementById('prescriptionPdf').value = '';
+            document.getElementById('pdfUploadStatus').style.display = 'none';
+            base64PrescriptionPdf = null;
+        }
+
+        let base64PrescriptionPdf = null;
+        function handlePrescriptionPdfUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    showNotification('Veuillez sélectionner un fichier PDF.', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    base64PrescriptionPdf = e.target.result;
+                    document.getElementById('pdfUploadStatus').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function addMedicineRow() {
             const row = document.createElement('div');
             row.className = 'medicine-item';
-            row.style = 'display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;';
             row.innerHTML = `
-                <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" placeholder="Médicament" style="flex: 2; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                    <input type="text" placeholder="Dosage" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                    <input type="text" placeholder="Durée" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                <div class="input-group">
+                    <input type="text" placeholder="Médicament" data-i18n="chat.prescription.medicine_name">
+                    <input type="text" placeholder="Dosage" data-i18n="chat.prescription.dosage">
+                    <input type="text" placeholder="Durée" data-i18n="chat.prescription.duration">
                 </div>
-                <input type="text" placeholder="Notes (ex: matin et soir, après le repas)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+                <input type="text" placeholder="Notes additionnelles" data-i18n="chat.prescription.notes" style="margin-top: 0.5rem;">
             `;
             document.getElementById('medicinesList').appendChild(row);
         }
@@ -600,8 +1071,8 @@
                 }
             });
 
-            if (medicines.length === 0) {
-                alert('Veuillez ajouter au moins un médicament.');
+            if (medicines.length === 0 && !base64PrescriptionPdf) {
+                showNotification('Veuillez ajouter au moins un médicament ou télécharger un PDF.', 'info');
                 return;
             }
 
@@ -617,13 +1088,14 @@
                     body: JSON.stringify({
                         patientId: currentPatientId,
                         medicines,
-                        instructions
+                        instructions,
+                        pdf: base64PrescriptionPdf
                     })
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                    alert('Ordonnance envoyée avec succès !');
+                    showNotification('Ordonnance envoyée avec succès !', 'success');
                     closePrescriptionModal();
 
                     // Notify patient via message
@@ -640,11 +1112,11 @@
                     });
                     loadMessages(currentPatientId);
                 } else {
-                    alert(data.message);
+                    showNotification(data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error submitting prescription:', error);
-                alert('Erreur lors de l\'envoi de l\'ordonnance.');
+                showNotification('Erreur lors de l\'envoi de l\'ordonnance.', 'error');
             }
         }
 

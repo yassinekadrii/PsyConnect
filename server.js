@@ -1,3 +1,16 @@
+/**
+ * @file server.js
+ * @description Main entry point for the PsyConnect backend server.
+ * 
+ * This file handles:
+ * - Express application setup
+ * - Socket.io initialization for real-time chat and WebRTC signaling
+ * - Database connection (MongoDB)
+ * - Middleware configuration (CORS, JSON parsing)
+ * - Route registration
+ * - Global error handling
+ */
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -50,6 +63,12 @@ io.on('connection', (socket) => {
     socket.on('ice-candidate', (data) => {
         socket.to(data.roomId).emit('ice-candidate', data);
     });
+
+    // Call Signaling
+    socket.on('start-call', (data) => {
+        console.log(`Call started in room ${data.roomId}`);
+        socket.to(data.roomId).emit('call-started', data);
+    });
 });
 
 // Middleware
@@ -78,6 +97,7 @@ app.use('/api/patient', require('./routes/patient'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/prescriptions', require('./routes/prescriptions'));
+app.use('/api/posts', require('./routes/posts'));
 
 // Health check route
 app.get('/api/health', (req, res) => {

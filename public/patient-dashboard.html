@@ -1,3 +1,12 @@
+<!-- 
+  @file public/patient-dashboard.html
+  @description Dashboard for patients to manage their health journey.
+  
+  Features:
+  - Overview of upcoming consultations
+  - Quick access to medical history (prescriptions)
+  - Profile summary and quick links
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -130,7 +139,34 @@
         .btn-contact:hover {
             background: #4f46e5;
         }
+
+        .mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .mode-online {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .mode-presence {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .mode-both {
+            background: #fef3c7;
+            color: #92400e;
+        }
     </style>
+    <script src="js/notifications.js"></script>
 </head>
 
 <body>
@@ -144,18 +180,20 @@
 
     <div class="container">
         <div class="header">
-            <h1>Nos Spécialistes</h1>
-            <p>Trouvez le psychologue qui vous correspond et commencez votre parcours de bien-être.</p>
+            <h1 data-i18n="sections.specialists">Nos Spécialistes</h1>
+            <p data-i18n="sections.specialists_subtitle">Trouvez le psychologue qui vous correspond et commencez votre
+                parcours de bien-être.</p>
         </div>
 
         <div class="doctors-grid" id="doctorsGrid">
             <!-- Doctors will be loaded here -->
-            <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);">Chargement des médecins...</p>
+            <p style="grid-column: 1/-1; text-align: center; color: var(--text-light);" data-i18n="common.loading">
+                Chargement des médecins...</p>
         </div>
     </div>
 
     <script>
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
 
         // Check auth
         const token = localStorage.getItem('token');
@@ -189,15 +227,24 @@
                 const grid = document.getElementById('doctorsGrid');
 
                 if (data.success && data.doctors.length > 0) {
-                    grid.innerHTML = data.doctors.map(doc => `
+                    grid.innerHTML = data.doctors.map(doc => {
+                        let modeClass = 'mode-online';
+                        let modeLabel = 'En ligne';
+                        if (doc.consultationMode === 'presence') { modeClass = 'mode-presence'; modeLabel = 'Cabinet'; }
+                        else if (doc.consultationMode === 'both') { modeClass = 'mode-both'; modeLabel = 'En ligne & Cabinet'; }
+
+                        const avatarSrc = doc.profilePicture || `https://ui-avatars.com/api/?name=${doc.firstName}+${doc.lastName}&background=6366f1&color=fff`;
+
+                        return `
                         <div class="doctor-card">
-                            <img src="https://ui-avatars.com/api/?name=${doc.firstName}+${doc.lastName}&background=6366f1&color=fff" alt="${doc.firstName}" class="doctor-avatar">
+                            <img src="${avatarSrc}" alt="${doc.firstName}" class="doctor-avatar">
                             <h3 class="doctor-name">Dr. ${doc.firstName} ${doc.lastName}</h3>
-                            <div class="doctor-specialty">Psychologue Clinicien</div>
-                            <p class="doctor-bio">Spécialiste en thérapie cognitive et comportementale. Accompagnement bienveillant pour anxiété et dépression.</p>
+                            <div class="mode-badge ${modeClass}">${modeLabel}</div>
+                            <div class="doctor-specialty">${doc.specialty || 'Psychologue'}</div>
+                            <p class="doctor-bio">${doc.bio ? doc.bio.substring(0, 100) + (doc.bio.length > 100 ? '...' : '') : 'Aucune description disponible.'}</p>
                             <button onclick="contactDoctor('${doc._id}', '${doc.firstName} ${doc.lastName}')" class="btn-contact">Contacter</button>
                         </div>
-                    `).join('');
+                    `}).join('');
                 } else {
                     grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun médecin disponible pour le moment.</p>';
                 }
@@ -209,8 +256,8 @@
 
         function contactDoctor(id, name) {
             if (!token) {
-                alert('Veuillez vous connecter pour contacter un médecin.');
-                window.location.href = 'login.html';
+                showNotification('Veuillez vous connecter pour contacter un médecin.', 'info');
+                setTimeout(() => window.location.href = 'login.html', 2000);
                 return;
             }
             // Logic to open chat with this doctor

@@ -1,3 +1,9 @@
+/**
+ * @file routes/messages.js
+ * @description Routes for handling chat messages and conversations.
+ * All routes require authentication.
+ */
+
 const express = require('express');
 const router = express.Router();
 const messageController = require('../controllers/messageController');

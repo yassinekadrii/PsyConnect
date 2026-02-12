@@ -1,3 +1,12 @@
+/**
+ * @file routes/admin.js
+ * @description Administrative routes for managing doctors, patients, and admins.
+ * 
+ * Access levels:
+ * - Admin: Manage doctors and patients, view dashboard stats.
+ * - Super Admin: Everything + Manage other admin accounts.
+ */
+
 const express = require('express');
 const {
     createDoctor,

@@ -1,3 +1,12 @@
+<!-- 
+  @file public/patient-chat.html
+  @description Patient-side interface for communicating with doctors.
+  
+  Integrates:
+  - Socket.io for messaging
+  - WebRTC for video calls
+  - Appointment/Prescription viewing
+-->
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -7,199 +16,610 @@
     <title>Mes Discussions - PsyConnect</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/i18n.js"></script>
+    <script src="js/notifications.js"></script>
     <style>
-        /* Reuse styles from doctor-chat.html for consistency */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #10b981;
+            --bg-body: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-blur: blur(12px);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #6366f1;
-            --bg-light: #f8fafc;
-            --white: #ffffff;
-            --text-dark: #1e293b;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --chat-bg: #e0e7ff;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
+        /* Modern Navbar */
         .navbar {
-            background: var(--white);
-            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            padding: 0.75rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            height: 70px;
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            z-index: 100;
+            position: sticky;
+            top: 0;
         }
 
         .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--primary);
             text-decoration: none;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
+        .logo::before {
+            content: "✚";
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* Main Container */
         .container {
             display: flex;
             flex: 1;
             overflow: hidden;
             width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
+            position: relative;
         }
 
+        /* Responsive Sidebar */
         .sidebar {
-            width: 350px;
+            width: 320px;
             background: var(--white);
-            border-right: 1px solid var(--border-color);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90;
         }
 
-        .patient-list {
+        .sidebar-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doctor-list {
             flex: 1;
             overflow-y: auto;
+            scrollbar-width: thin;
         }
 
-        .patient-item {
+        .doctor-item {
             display: flex;
             align-items: center;
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             cursor: pointer;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+            gap: 1rem;
         }
 
-        .patient-item:hover,
-        .patient-item.active {
-            background: var(--bg-light);
+        .doctor-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .doctor-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--primary);
         }
 
         .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: #ddd;
-            margin-right: 1rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #e2e8f0;
             object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-sm);
         }
 
-        .patient-info {
+        .doctor-info {
             flex: 1;
+            min-width: 0;
         }
 
-        .patient-name {
+        .doctor-name {
             font-weight: 600;
-            color: var(--text-dark);
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .last-msg {
             font-size: 0.85rem;
-            color: var(--text-light);
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .msg-time {
-            font-size: 0.75rem;
-            color: var(--text-light);
-        }
-
+        /* Chat Area */
         .chat-area {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #fff;
+            background: #f8fafc;
+            position: relative;
         }
 
         .chat-header {
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            z-index: 10;
         }
 
-        .video-call-btn {
-            background: var(--primary-color);
-            color: var(--white);
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #toggleSidebar {
+            display: none;
+            background: none;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
+            font-size: 1.5rem;
             cursor: pointer;
+            color: var(--text-main);
+            padding: 0.5rem;
+            margin-right: -0.5rem;
         }
 
+        .header-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-text h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-right: 0.4rem;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-right: 0.4rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        #prescriptionBtn {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        #prescriptionBtn:hover {
+            background: #059669;
+            color: white;
+        }
+
+        #videoCallBtn {
+            background: var(--primary);
+            color: white;
+        }
+
+        #videoCallBtn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Messages Container */
         .messages-container {
             flex: 1;
-            padding: 2rem;
+            padding: 1.5rem;
             overflow-y: auto;
-            background-color: #f0f2f5;
-            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
-            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #f1f5f9;
+            scroll-behavior: smooth;
         }
 
         .message {
-            max-width: 60%;
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            position: relative;
+            max-width: 75%;
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
             font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.received {
             background: var(--white);
+            color: var(--text-main);
             align-self: flex-start;
-            border-top-left-radius: 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
         .message.sent {
-            background: #dcf8c6;
+            background: var(--primary);
+            color: var(--white);
             align-self: flex-end;
-            border-top-right-radius: 0;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
 
+        /* Input Area */
         .input-area {
-            padding: 1rem 2rem;
+            padding: 1.25rem 1.5rem;
             background: var(--white);
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 1rem;
+            align-items: center;
+        }
+
+        .msg-input-wrapper {
+            flex: 1;
+            position: relative;
         }
 
         .msg-input {
-            flex: 1;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
+            width: 100%;
+            padding: 0.85rem 1.25rem;
+            padding-right: 3rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 14px;
             outline: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .msg-input:focus {
+            background: var(--white);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
         .send-btn {
-            background: transparent;
+            background: var(--primary);
+            color: white;
             border: none;
-            color: var(--primary-color);
-            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: scale(1.05);
         }
 
         .send-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+        }
+
+        .send-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive Mobile Styles */
+        @media (max-width: 768px) {
+            .navbar {
+                display: none;
+            }
+
+            .container {
+                height: 100vh;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                width: 280px;
+                box-shadow: 10px 0 15px rgba(0, 0, 0, 0.05);
+                z-index: 1000;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            #toggleSidebar {
+                display: block;
+            }
+
+            .chat-header {
+                padding: 0.75rem 1rem;
+                gap: 0.5rem;
+                background: var(--white);
+                /* Ensure solid background */
+            }
+
+            .header-main {
+                flex: 1;
+                min-width: 0;
+                gap: 0.5rem;
+            }
+
+            .avatar#headerAvatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+            }
+
+            .header-text h3 {
+                font-size: 0.85rem;
+            }
+
+            .btn-action span:not(.icon) {
+                display: none;
+            }
+
+            .btn-action {
+                padding: 0.6rem 0.75rem;
+                min-width: 38px;
+                height: 36px;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+
+            .input-area {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 85;
+            backdrop-filter: blur(2px);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav-header {
+                display: flex !important;
+            }
+
+            .sidebar-title-wrapper {
+                display: none !important;
+            }
+
+            .sidebar-header {
+                padding: 1.5rem 1.25rem;
+            }
+        }
+
+        /* Pulse animation for incoming call */
+        @keyframes pulse-emerald {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse-emerald 2s infinite;
+            border: 2px solid #fff !important;
         }
     </style>
 </head>
@@ -207,102 +627,132 @@
 <body>
     <nav class="navbar">
         <a href="index.html" class="logo">PsyConnect</a>
-        <div style="display: flex; gap: 2rem; align-items: center;">
-            <div>
-                <button class="lang-btn" id="langSwitcher" onclick="toggleLanguage()"
-                    style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
-            </div>
-            <div style="display: flex; gap: 1.5rem; align-items: center;">
-                <a href="index.html" style="text-decoration: none; color: var(--text-dark); font-weight: 500;"
-                    data-i18n="nav.accueil">Accueil</a>
-                <button onclick="logout()"
-                    style="background: none; border: none; color: #ef4444; font-weight: 600; cursor: pointer;"
-                    data-i18n="nav.logout">Déconnexion</button>
-            </div>
+        <div class="nav-links">
+            <a href="index.html" data-i18n="nav.accueil">Accueil</a>
+            <button onclick="logout()" class="btn-logout" data-i18n="nav.logout">Déconnexion</button>
         </div>
     </nav>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 600;">Vos Discussions
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <!-- Mobile Only Logo & Navigation -->
+                <div class="mobile-nav-header"
+                    style="display: none; flex-direction: column; gap: 1rem; margin-bottom: 1rem; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <a href="index.html" class="logo" style="margin: 0;">PsyConnect</a>
+                        <button onclick="toggleSidebar()" class="close-modal">&times;</button>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <a href="index.html"
+                            style="text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🏠</span> <span data-i18n="nav.accueil">Accueil</span>
+                        </a>
+                        <button onclick="logout()" class="btn-logout"
+                            style="width: 100%; justify-content: flex-start; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                            <span>🚪</span> <span data-i18n="nav.logout">Déconnexion</span>
+                        </button>
+                    </div>
+                    <div style="height: 1px; background: var(--border); margin: 0.5rem 0;"></div>
+                </div>
+
+                <div class="sidebar-title-wrapper"
+                    style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <span data-i18n="chat.sidebar.title" style="font-weight: 700;">Vos Discussions</span>
+                    <!-- Desktop Only Close Indicator if needed? No, let's keep it simple -->
+                </div>
             </div>
-            <div class="patient-list" id="doctorList">
-                <div style="padding: 1rem; color: var(--text-light); text-align: center;">Chargement...</div>
+            <div class="doctor-list" id="doctorList">
+                <div style="padding: 2rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">
+                    Chargement des discussions...
+                </div>
             </div>
         </div>
 
         <!-- Chat Area -->
         <div class="chat-area">
             <div class="chat-header">
-                <div style="display: flex; align-items: center;">
-                    <img src="https://ui-avatars.com/api/?name=Médecin&background=random" alt="Doctor" class="avatar"
-                        id="headerAvatar" style="opacity: 0.5;">
-                    <div>
+                <div class="header-main">
+                    <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+                    <img src="https://ui-avatars.com/api/?name=Doctor&background=6366f1&color=fff" alt="Doctor"
+                        class="avatar" id="headerAvatar" style="opacity: 0.3;">
+                    <div class="header-text">
                         <h3 id="chatDoctorName">Sélectionnez un médecin</h3>
-                        <span style="color: var(--text-light); font-size: 0.85rem;" id="statusText">...</span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem;" id="statusText">...</span>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center;">
-                    <button id="prescriptionBtn" onclick="openPrescriptionsModal()"
-                        style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; display: none;">
-                        <span>📜</span> <span data-i18n="chat.header.view_prescriptions">Ordonnances</span>
+                <div class="header-actions">
+                    <button id="prescriptionBtn" class="btn-action" onclick="openPrescriptionsModal()"
+                        style="display: none;">
+                        <span class="icon">📜</span> <span data-i18n="chat.header.view_prescriptions">Ordonnances</span>
                     </button>
-                    <button class="video-call-btn" onclick="startVideoCall()" style="display: none;" id="videoCallBtn">
-                        📹 Rejoindre la vidéo
+                    <button class="btn-action" id="videoCallBtn" onclick="joinVideoCall()"
+                        style="display: none; background: #10b981; color: white;">
+                        <span class="icon">📹</span> <span data-i18n="chat.header.join_video">Rejoindre</span>
                     </button>
                 </div>
             </div>
 
             <div class="messages-container" id="messagesContainer">
                 <div class="no-chat-selected"
-                    style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">💬</div>
-                    <h3>Sélectionnez une discussion</h3>
-                    <p>Ou contactez un spécialiste depuis l'accueil.</p>
+                    style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-align: center; padding: 2rem;">
+                    <div style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.2;">💬</div>
+                    <h3 style="margin-bottom: 0.5rem;" data-i18n="chat.sidebar.no_doctors">Bienvenue dans votre espace
+                        santé</h3>
+                    <p style="font-size: 0.95rem; max-width: 300px; line-height: 1.6;"
+                        data-i18n="chat.sidebar.no_doctors">Sélectionnez une discussion ou
+                        contactez un spécialiste depuis l'accueil pour commencer.</p>
                 </div>
             </div>
 
             <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Écrivez votre message..."
-                    data-i18n="chat.form.placeholder" onkeypress="handleKeyPress(e)" disabled>
-                <button id="sendBtn" onclick="sendMessage()" disabled data-i18n="chat.form.send">Envoyer</button>
+                <div class="msg-input-wrapper">
+                    <input type="text" id="messageInput" class="msg-input" placeholder="Écrivez votre message..."
+                        data-i18n="chat.form.placeholder" onkeypress="handleKeyPress(event)" disabled>
+                </div>
+                <button id="sendBtn" class="send-btn" onclick="sendMessage()" disabled>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Video Call Modal -->
-    <div id="videoModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;">
-        <div
-            style="position: relative; width: 80%; max-width: 800px; background: #000; border-radius: 12px; overflow: hidden; aspect-ratio: 16/9; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
-            <video id="remoteVideo" autoplay playsinline
-                style="width: 100%; height: 100%; object-fit: cover; background: #222;"></video>
-            <video id="localVideo" autoplay playsinline muted
-                style="position: absolute; bottom: 20px; right: 20px; width: 160px; height: 90px; object-fit: cover; border: 2px solid white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); background: #333;"></video>
-            <div
-                style="position: absolute; bottom: 20px; left: 20px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem;">
-                En attente de connexion...
+    <div id="videoModal" class="modal-overlay" style="background: rgba(0,0,0,0.9);">
+        <div class="modal-content" style="background: #000; border: none; max-width: 900px;">
+            <div style="position: relative; width: 100%; height: 100%; aspect-ratio: 16/9;">
+                <video id="remoteVideo" autoplay playsinline
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"></video>
+                <video id="localVideo" autoplay playsinline muted
+                    style="position: absolute; bottom: 20px; right: 20px; width: 160px; height: 90px; object-fit: cover; border: 2px solid white; border-radius: 8px; box-shadow: var(--shadow-lg);"></video>
+                <div
+                    style="position: absolute; top: 20px; left: 20px; color: white; background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">
+                    Consultation en cours
+                </div>
+            </div>
+            <div style="padding: 1.5rem; display: flex; justify-content: center;">
+                <button onclick="endCall()" class="btn-logout" style="padding: 1rem 2.5rem; border-radius: 50px;"
+                    data-i18n="nav.logout">
+                    Raccrocher
+                </button>
             </div>
         </div>
-        <button onclick="endCall()"
-            style="margin-top: 2rem; background: #ef4444; color: white; padding: 1rem 2rem; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: 600; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); transition: transform 0.2s; display: flex; align-items: center; gap: 0.5rem;">
-            <span>❌</span> Raccrocher
-        </button>
     </div>
 
     <!-- Prescriptions Modal -->
-    <div id="prescriptionsModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1001; justify-content: center; align-items: center;">
-        <div
-            style="background: white; padding: 2rem; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="color: var(--text-dark);">📜 Mes Ordonnances</h2>
-                <button onclick="closePrescriptionsModal()"
-                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+    <div id="prescriptionsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-i18n="chat.header.view_prescriptions">📜 Ordonnances</h2>
+                <button onclick="closePrescriptionsModal()" class="close-modal">&times;</button>
             </div>
-            <div id="prescriptionsList">
-                <p style="text-align: center; color: var(--text-light);">Chargement des ordonnances...</p>
+            <div class="modal-body" id="prescriptionsList">
+                <p style="text-align: center; color: var(--text-muted);">Chargement...</p>
             </div>
         </div>
     </div>
@@ -310,18 +760,34 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/webrtc.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Audio for ringtone -->
+    <audio id="ringtone" loop>
+        <source src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3" type="audio/mp3">
+    </audio>
 
     <script>
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const API_URL = 'http://localhost:3001/api';
+        const API_URL = '/api';
         let currentReceiverId = null;
+        let currentMessagesCount = 0;
+        let lastMessageId = null;
 
         if (!token || user.role !== 'patient') {
             window.location.href = 'login.html';
         }
 
-        document.getElementById('userName').textContent = user.firstName;
+        // Check if element exists before setting textContent
+        const userNameElem = document.getElementById('userName');
+        if (userNameElem) userNameElem.textContent = user.firstName;
+
+        // Toggle Sidebar for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
 
         // Initialize
         initChat();
@@ -365,22 +831,39 @@
 
         function renderSidebar(conversations) {
             const list = document.getElementById('doctorList');
+            const selectedDoctor = JSON.parse(localStorage.getItem('selectedDoctor'));
 
-            if (conversations.length === 0) {
-                list.innerHTML = '<div style="padding: 1rem; color: var(--text-light); text-align: center;">Aucune discussion.</div>';
+            if (conversations.length === 0 && !selectedDoctor) {
+                list.innerHTML = '<div style="padding: 2rem; color: var(--text-muted); text-align: center; font-size: 0.9rem;">Aucune discussion.</div>';
                 return;
             }
 
+            let displayConversations = [...conversations];
+            if (selectedDoctor) {
+                const alreadyInList = conversations.some(conv => conv.user._id.toString() === selectedDoctor.id.toString());
+                if (!alreadyInList) {
+                    displayConversations.unshift({
+                        user: {
+                            _id: selectedDoctor.id,
+                            firstName: selectedDoctor.name.split(' ')[0],
+                            lastName: selectedDoctor.name.split(' ').slice(1).join(' ') || ''
+                        },
+                        lastMessage: 'Nouvelle discussion',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            }
+
             let html = '';
-            conversations.forEach(conv => {
-                const isActive = currentReceiverId === conv.user._id ? 'active' : '';
+            displayConversations.forEach(conv => {
+                const isActive = currentReceiverId && currentReceiverId.toString() === conv.user._id.toString() ? 'active' : '';
+                const avatarSrc = conv.user.profilePicture || `https://ui-avatars.com/api/?name=${conv.user.firstName}+${conv.user.lastName}&background=6366f1&color=fff`;
                 html += `
-                    <div class="patient-item ${isActive}" onclick="selectDoctorFromSidebar('${conv.user._id}', '${conv.user.firstName}', '${conv.user.lastName}')">
-                        <img src="https://ui-avatars.com/api/?name=${conv.user.firstName}+${conv.user.lastName}&background=random" alt="Doctor" class="avatar">
-                        <div class="patient-info">
-                            <div class="patient-name">Dr. ${conv.user.firstName} ${conv.user.lastName}</div>
+                    <div class="doctor-item ${isActive}" onclick="selectDoctorFromSidebar('${conv.user._id}', '${conv.user.firstName}', '${conv.user.lastName}')">
+                        <img src="${avatarSrc}" alt="Doctor" class="avatar">
+                        <div class="doctor-info">
+                            <div class="doctor-name">Dr. ${conv.user.firstName} ${conv.user.lastName}</div>
                             <div class="last-msg">${conv.lastMessage.substring(0, 30)}${conv.lastMessage.length > 30 ? '...' : ''}</div>
-                             <div class="msg-time">${new Date(conv.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                         </div>
                     </div>
                 `;
@@ -393,32 +876,44 @@
             selectDoctor({ _id: id, firstName, lastName });
         };
 
-        function selectDoctor(doctor, isNew = false) {
+        async function selectDoctor(doctor, isNew = false) {
             currentReceiverId = doctor._id;
 
+            // Reset message tracking when switching doctors
+            currentMessagesCount = 0;
+            lastMessageId = null;
+            document.getElementById('messagesContainer').innerHTML = '';
             // Update Header
             document.getElementById('chatDoctorName').textContent = `Dr. ${doctor.firstName} ${doctor.lastName}`;
-            document.getElementById('statusText').textContent = 'En ligne';
-            document.getElementById('headerAvatar').src = `https://ui-avatars.com/api/?name=${doctor.firstName}+${doctor.lastName}&background=6366f1&color=fff`;
+            document.getElementById('statusText').innerHTML = '<span class="status-dot"></span>En ligne';
+
+            const avatarSrc = doctor.profilePicture || `https://ui-avatars.com/api/?name=${doctor.firstName}+${doctor.lastName}&background=6366f1&color=fff`;
+            document.getElementById('headerAvatar').src = avatarSrc;
             document.getElementById('headerAvatar').style.opacity = '1';
 
-            // Show Video Call Button and Prescription Button
-            document.getElementById('videoCallBtn').style.display = 'block';
-            document.getElementById('prescriptionBtn').style.display = 'block';
+            // Show Buttons
+            // document.getElementById('videoCallBtn').style.display = 'flex'; // Don't show by default for patient
+            document.getElementById('prescriptionBtn').style.display = 'flex';
+
+            // Join Signaling Room for Call Notifications
+            const userId = user.id || user._id;
+            const participants = [userId, doctor._id].sort();
+            const roomId = participants.join('-');
+            console.log('Joining signaling room:', roomId);
+            socket.emit('join-room', roomId, userId);
 
             // Enable inputs
             document.getElementById('messageInput').disabled = false;
-            const sendBtn = document.getElementById('sendBtn');
-            if (sendBtn) sendBtn.disabled = false;
-
+            document.getElementById('sendBtn').disabled = false;
             document.getElementById('messageInput').focus();
 
             // Load messages
             loadMessages(currentReceiverId);
 
-            // Hide empty state if present
-            const emptyState = document.querySelector('.no-chat-selected');
-            if (emptyState) emptyState.style.display = 'none';
+            // Hide sidebar on mobile after selection
+            if (window.innerWidth <= 768) {
+                toggleSidebar();
+            }
 
             fetchConversations();
         }
@@ -432,34 +927,48 @@
 
                 if (data.success) {
                     const container = document.getElementById('messagesContainer');
-                    const wasAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
-
-                    // Cleanup placeholders
-                    if (container.querySelector('.no-chat-selected')) {
-                        container.innerHTML = '';
-                    }
 
                     if (data.messages.length === 0) {
-                        container.innerHTML = '<div style="text-align: center; margin-top: 2rem; color: var(--text-light);"><p>Démarrez la conversation...</p></div>';
-                    } else {
-                        // Check if we need to full rebuild or just append (full rebuild is safer for sync)
-                        // For this simple app, full rebuild of the innerHTML is acceptable
-                        container.innerHTML = '';
-                        data.messages.forEach(msg => {
-                            const div = document.createElement('div');
-                            // Fix for user.id logic - assuming user._id is present
-                            const userId = user.id || user._id; // Updated logic
-                            div.className = `message ${msg.sender === userId ? 'sent' : 'received'}`;
-                            div.textContent = msg.content;
-                            container.appendChild(div);
-                        });
+                        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">Démarrez la conversation...</div>';
+                        currentMessagesCount = 0;
+                        lastMessageId = null;
+                        return;
                     }
 
+                    const newLastMsg = data.messages[data.messages.length - 1];
+                    const newLastId = newLastMsg._id || newLastMsg.id;
+
+                    // If same count and same last ID, skip update
+                    if (data.messages.length === currentMessagesCount && newLastId === lastMessageId) {
+                        return;
+                    }
+
+                    // If it's a new conversation or messages were deleted, rebuild
+                    if (currentMessagesCount === 0 || data.messages.length < currentMessagesCount) {
+                        container.innerHTML = '';
+                        data.messages.forEach(msg => appendMessageElement(container, msg));
+                    } else {
+                        // Append only new messages
+                        const newMessages = data.messages.slice(currentMessagesCount);
+                        newMessages.forEach(msg => appendMessageElement(container, msg));
+                    }
+
+                    currentMessagesCount = data.messages.length;
+                    lastMessageId = newLastId;
                     container.scrollTop = container.scrollHeight;
                 }
             } catch (error) {
                 console.error('Error loading messages:', error);
             }
+        }
+
+        function appendMessageElement(container, msg) {
+            const div = document.createElement('div');
+            const myId = (user.id || user._id || '').toString();
+            const senderId = (msg.sender._id || msg.sender || '').toString();
+            div.className = `message ${senderId === myId ? 'sent' : 'received'}`;
+            div.textContent = msg.content;
+            container.appendChild(div);
         }
 
         async function sendMessage() {
@@ -487,7 +996,7 @@
                     }
                 } catch (error) {
                     console.error('Error sending message:', error);
-                    alert('Erreur lors de l\'envoi du message');
+                    showNotification('Erreur lors de l\'envoi du message', 'error');
                 }
             }
         }
@@ -496,19 +1005,60 @@
             if (e.key === 'Enter') sendMessage();
         }
 
-        function startVideoCall() {
-            if (!currentReceiverId) {
-                alert('Veuillez d\'abord sélectionner une discussion.');
-                return;
-            }
+        function joinVideoCall() {
+            if (!currentReceiverId) return;
 
             const userId = user.id || user._id;
-            // Create a unique room ID based on participants
             const participants = [userId, currentReceiverId].sort();
             const roomId = participants.join('-');
 
+            // Stop ringtone if playing
+            const ringtone = document.getElementById('ringtone');
+            if (ringtone) {
+                ringtone.pause();
+                ringtone.currentTime = 0;
+            }
+
+            // Hide join button again or leave it? usage choice.
+            // document.getElementById('videoCallBtn').style.display = 'none';
+
+            console.log('Attempting to join video call with doctor:', currentReceiverId);
             startVideoCallSession(roomId, userId);
         }
+
+        // Listen for incoming calls
+        socket.on('call-started', (data) => {
+            console.log('Incoming call event received:', data);
+
+            // Verify if this call is for current conversation
+            const userId = user.id || user._id;
+            if (!currentReceiverId) return;
+
+            const participants = [userId, currentReceiverId].sort();
+            const currentRoomId = participants.join('-');
+
+            if (data.roomId === currentRoomId) {
+                const btn = document.getElementById('videoCallBtn');
+                btn.style.display = 'flex';
+                btn.classList.add('pulse-animation');
+
+                // Set text to Rejoindre explicitly if i18n isn't ready
+                const btnText = btn.querySelector('[data-i18n="chat.header.join_video"]');
+                if (btnText) btnText.textContent = "Rejoindre";
+
+                // Play ringtone
+                const ringtone = document.getElementById('ringtone');
+                if (ringtone) {
+                    ringtone.play().catch(e => {
+                        console.log('Audio play failed (maybe need interaction)', e);
+                        // Fallback: show a more intrusive notification
+                        showNotification('📞 APPEL VIDÉO ENTRANT ! Cliquez sur le bouton vert.', 'info');
+                    });
+                }
+
+                showNotification('📞 Appel vidéo entrant !', 'info');
+            }
+        });
 
         function endCall() {
             endCallSession();
@@ -542,12 +1092,18 @@
                     // Store prescriptions for PDF generation
                     window.currentPrescriptions = data.prescriptions;
 
-                    container.innerHTML = data.prescriptions.map(p => `
+                    container.innerHTML = data.prescriptions.map(p => {
+                        const hasMedicines = p.medicines && p.medicines.length > 0;
+                        const hasPdf = p.pdf && p.pdf.length > 0;
+
+                        return `
                         <div id="presc-${p._id}" style="border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; background: #fbfcfe;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
                                 <strong style="color: var(--primary-color);">Dr. ${p.doctor.firstName} ${p.doctor.lastName}</strong>
                                 <span style="font-size: 0.85rem; color: var(--text-light);">${new Date(p.createdAt).toLocaleDateString('fr-FR')}</span>
                             </div>
+
+                            ${hasMedicines ? `
                             <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
                                 <thead>
                                     <tr style="text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-light);">
@@ -569,17 +1125,32 @@
                                     `).join('')}
                                 </tbody>
                             </table>
+                            ` : (hasPdf ? '' : '<p style="color: var(--text-light); font-size: 0.9rem;">Consultez les instructions ou le PDF joint.</p>')}
+
                             ${p.instructions ? `
                                 <div style="font-size: 0.9rem; color: var(--text-dark); background: #f1f5f9; padding: 0.75rem; border-radius: 4px; margin-bottom: 1rem;">
                                     <strong>Instructions :</strong> ${p.instructions}
                                 </div>
                             ` : ''}
-                            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-                                 <button onclick="downloadPrescriptionPDF('${p._id}')" style="font-size: 0.85rem; background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">📄 Télécharger PDF</button>
+
+                            ${hasPdf ? `
+                                <div style="margin-bottom: 1rem; padding: 0.75rem; background: #ecfdf5; border: 1px solid #10b981; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem; color: #065f46;">
+                                    <span>📄</span>
+                                    <span style="font-size: 0.9rem; font-weight: 600;">Document PDF joint par le médecin</span>
+                                </div>
+                            ` : ''}
+
+                            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+                                 ${hasPdf ? `
+                                    <button onclick="viewUploadedPDF('${p._id}')" style="font-size: 0.85rem; background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">👁️ Voir PDF</button>
+                                 ` : ''}
+                                 ${hasMedicines ? `
+                                    <button onclick="downloadPrescriptionPDF('${p._id}')" style="font-size: 0.85rem; background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.3rem;">📄 Générer PDF</button>
+                                 ` : ''}
                                  <button onclick="window.print()" style="font-size: 0.85rem; background: white; border: 1px solid var(--border-color); color: var(--text-dark); padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">🖨️ Imprimer</button>
                             </div>
                         </div>
-                    `).join('');
+                    `}).join('');
                 } else {
                     container.innerHTML = `<p style="text-align: center; color: #ef4444;">${data.message}</p>`;
                 }
@@ -587,6 +1158,14 @@
                 console.error('Error loading prescriptions:', error);
                 document.getElementById('prescriptionsList').innerHTML = '<p style="text-align: center; color: #ef4444;">Erreur lors du chargement des ordonnances.</p>';
             }
+        }
+
+        async function viewUploadedPDF(id) {
+            const presc = window.currentPrescriptions.find(p => p._id === id);
+            if (!presc || !presc.pdf) return;
+
+            const win = window.open();
+            win.document.write('<iframe src="' + presc.pdf + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
         }
 
         async function downloadPrescriptionPDF(id) {

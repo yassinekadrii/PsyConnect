@@ -1,3 +1,8 @@
+/**
+ * @file Message.js
+ * @description Mongoose schema for chat messages between patients and doctors.
+ */
+
 const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
