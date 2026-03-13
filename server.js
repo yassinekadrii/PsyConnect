@@ -36,6 +36,36 @@ const io = new Server(server, {
     }
 });
 
+// Security Middleware
+const helmet = require('helmet');
+const mongoSanitize = require('mongo-sanitize');
+const rateLimit = require('express-rate-limit');
+
+// Use Helmet for secure headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Disable CSP for local dev/simplicity unless specific rules are needed
+    crossOriginEmbedderPolicy: false
+}));
+
+// Basic rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: { success: false, message: "Trop de requêtes, veuillez réessayer plus tard." }
+});
+
+// Apply limiter to all API routes
+app.use('/api/', limiter);
+
+// Sanitize NoSQL queries
+app.use(express.json({ limit: '10mb' })); // Increased limit for PDF uploads
+app.use((req, res, next) => {
+    req.body = mongoSanitize(req.body);
+    req.query = mongoSanitize(req.query);
+    req.params = mongoSanitize(req.params);
+    next();
+});
+
 // Socket.io Connection
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
@@ -73,17 +103,13 @@ io.on('connection', (socket) => {
 
 // Middleware
 app.use(cors());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from public directory
 app.use(express.static('public'));
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ MongoDB connecté avec succès'))
     .catch((err) => {
         console.error('❌ Erreur de connexion MongoDB:', err);

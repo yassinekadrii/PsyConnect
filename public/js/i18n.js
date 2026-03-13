@@ -32,12 +32,14 @@ function applyLanguage(lang) {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 
     // Switch body font for Arabic to something more readable
+    document.body.classList.remove('rtl', 'lang-en', 'lang-fr', 'lang-ar');
+    document.body.classList.add(`lang-${lang}`);
+    
     if (lang === 'ar') {
         document.body.style.fontFamily = "'Inter', 'Arial', sans-serif";
         document.body.classList.add('rtl');
     } else {
         document.body.style.fontFamily = "'Inter', sans-serif";
-        document.body.classList.remove('rtl');
     }
 
     // Apply translations to all elements with data-i18n attribute

@@ -1,0 +1,203 @@
+{
+    "common": {
+        "login": "Login",
+        "register": "Register",
+        "home": "Home",
+        "profile": "Profile",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "cancel": "Cancel",
+        "logout": "Logout",
+        "welcome": "Welcome",
+        "back": "Back",
+        "save": "Save",
+        "email": "Email Address",
+        "password": "Password",
+        "patient": "Patient",
+        "specialist": "Specialist",
+        "phone": "Phone",
+        "not_provided": "Not provided",
+        "made_by": "Developed by Yassine Kadri",
+        "see_all": "See all",
+        "show_all": "Show all",
+        "user": "User",
+        "language": "Language",
+        "info": "Info",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "specialty": "Specialty",
+        "location": "Location",
+        "app_name": "Platform",
+        "available": "Available",
+        "video": "Video",
+        "chat": "Chat",
+        "session": "session",
+        "consult": "Consult",
+        "messages": "Messages",
+        "dashboard": "Dashboard",
+        "welcome_back": "Welcome Back!",
+        "settings": "Settings",
+        "yesterday": "Yesterday"
+    },
+    "nav": {
+        "home": "Home",
+        "services": "Services",
+        "specialists": "Specialists",
+        "contact": "Contact"
+    },
+    "auth": {
+        "title": "Welcome Back!",
+        "subtitle": "Log in to access your space",
+        "dont_have_account": "Don't have an account?",
+        "already_have_account": "Already have an account?",
+        "signup_link": "Sign up",
+        "login_link": "Log in",
+        "logout_confirm": "Are you sure you want to log out?",
+        "conn_error": "Connection Error",
+        "server_unreachable": "Could not reach the server.",
+        "passwords_dont_match": "Passwords do not match",
+        "account_created": "Account created! Please log in.",
+        "registration_failed": "Registration failed. Check your connection.",
+        "signup_title": "Create an Account",
+        "tagline": "Your mental well-being, our priority",
+        "account_created_verify": "Account created! Please verify your email.",
+        "verification": "Verification",
+        "verify_email_title": "Check your inbox",
+        "verify_email_desc": "We have sent a verification code to:",
+        "verify_now": "Verify Now",
+        "no_code": "Didn't receive a code?",
+        "resend_in": "Resend in",
+        "resend_now": "Resend",
+        "otp_resent": "A new code has been sent.",
+        "not_verified": "Account Not Verified",
+        "verify_email_first": "Please verify your email to continue.",
+        "invalid_otp": "Please enter the 6-digit code.",
+        "verify_error": "Error during verification",
+        "resend_error": "Error sending code"
+    },
+    "landing": {
+        "title": "Take Care of Your Mental Health",
+        "subtitle": "Connecting patients with certified specialists for a safe and confidential support.",
+        "get_started": "Get Started"
+    },
+    "hero": {
+        "badge": "#1 Psychology Platform",
+        "title_part1": "Your well-being our",
+        "title_part2": "priority",
+        "subtitle": "Consult qualified psychologists from the comfort of your home. Secure, confidential, and accessible therapy.",
+        "start_button": "Get Started",
+        "learn_more_button": "Learn More"
+    },
+    "stats": {
+        "users": "Users",
+        "specialists": "Specialists",
+        "sessions": "Sessions"
+    },
+    "specialists": {
+        "tag": "Experts",
+        "title": "Our Specialists"
+    },
+    "services": {
+        "tag": "Services",
+        "title": "How we help you",
+        "video": {
+            "title": "Video Consultation",
+            "desc": "Talk face-to-face with your therapist via our secure platform."
+        },
+        "chat": {
+            "title": "Private Chat",
+            "desc": "Exchange instant messages for daily and flexible follow-up."
+        },
+        "booking": {
+            "title": "Flexible Booking",
+            "desc": "Book an appointment in a few clicks according to your availability."
+        }
+    },
+    "footer": {
+        "tagline": "Making therapy accessible to everyone, everywhere."
+    },
+    "profile": {
+        "account_settings": "Account Settings",
+        "personal_info": "Personal Information",
+        "security": "Security",
+        "change_password": "Change Password",
+        "preferences": "Preferences",
+        "notifications": "Notifications",
+        "logout_text": "Log out"
+    },
+    "admin": {
+        "dashboard_title": "Admin Dashboard",
+        "management_subtitle": "Platform Management",
+        "total_patients": "Total Patients",
+        "total_doctors": "Total Doctors",
+        "prescriptions": "Prescriptions",
+        "messages": "Messages",
+        "quick_actions": "Quick Actions",
+        "add_doctor": "Add Doctor",
+        "patient_list": "Patient List",
+        "pdf_report": "PDF Report",
+        "recent_activity": "Recent Activity",
+        "new_doctor_registered": "New doctor registered",
+        "hours_ago": "{{count}} hours ago",
+        "fill_required_fields": "Please fill in all required fields.",
+        "doctor_created_success": "Doctor account created successfully.",
+        "create_failed": "Creation failed",
+        "creation_error": "Creation Error",
+        "new_doctor": "New Doctor",
+        "specialty_placeholder": "Clinical Psychologist",
+        "create_doctor_btn": "Create Doctor Account"
+    },
+    "home": {
+        "welcome": "Welcome",
+        "search_placeholder": "Find a specialist...",
+        "categories": "Categories",
+        "recommended_specialists": "Recommended Specialists",
+        "no_specialists_found": "No specialists found",
+        "load_doctors_error": "Unable to load specialists. Check your connection.",
+        "logout_confirmation": "Do you really want to log out?",
+        "loading_specialists": "Searching for the best specialists...",
+        "results_for": "Results for \"{{query}}\"",
+        "our_specialists": "Our Specialists",
+        "empty_subtitle": "Try modifying your search criteria."
+    },
+    "categories": {
+        "anxiety": "Anxiety",
+        "depression": "Depression",
+        "couple": "Couple",
+        "sleep": "Sleep"
+    },
+    "chat": {
+        "title": "Chat",
+        "video_call": "Video Call",
+        "video_call_init": "Initializing secure video call...",
+        "join": "Join",
+        "video_call_soon": "Video call feature will be available soon on mobile.",
+        "send_error": "Failed to send message",
+        "type_message": "Type a message...",
+        "no_conversations": "No conversations found",
+        "failed_fetch_conversations": "Unable to load your conversations.",
+        "doctor_empty_hint": "Start by checking your patient list.",
+        "patient_empty_hint": "Start by consulting a specialist."
+    },
+    "splash": {
+        "tagline": "Your mental well-being starts here"
+    },
+    "doctor": {
+        "patients": "My Patients",
+        "quick_actions": "Quick Actions",
+        "recent_consultations": "Recent Consultations",
+        "no_recent_consultations": "No recent consultations",
+        "failed_fetch_patients": "Unable to load the patient list.",
+        "no_patients": "No patients found"
+    },
+    "days": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+    }
+}

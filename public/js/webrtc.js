@@ -16,12 +16,27 @@ const rtcConfig = {
     ]
 };
 
-// Initialize video call
-async function startVideoCallSession(roomId, currentUserId) {
+// Initialize call session
+async function startCallSession(roomId, currentUserId, options = { video: true, audio: true }) {
     try {
         // Show video modal
         const modal = document.getElementById('videoModal');
         if (modal) modal.style.display = 'flex';
+
+        // Update UI based on type
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const audioPlaceholder = document.getElementById('audioPlaceholder');
+
+        if (!options.video) {
+            if (localVideo) localVideo.style.display = 'none';
+            if (remoteVideo) remoteVideo.style.display = 'none';
+            if (audioPlaceholder) audioPlaceholder.style.display = 'flex';
+        } else {
+            if (localVideo) localVideo.style.display = 'block';
+            if (remoteVideo) remoteVideo.style.display = 'block';
+            if (audioPlaceholder) audioPlaceholder.style.display = 'none';
+        }
 
         // Setup socket listeners FIRST to avoid missing incoming offers/candidates
         setupSocketListeners(roomId);
@@ -31,18 +46,13 @@ async function startVideoCallSession(roomId, currentUserId) {
         socket.emit('join-room', roomId, currentUserId);
 
         // Get local stream
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const localVideo = document.getElementById('localVideo');
-        if (localVideo) localVideo.srcObject = localStream;
-
-        // If someone was already there, they might have sent an offer we missed?
-        // No, we joined first, but we missed the 'user-connected' if they were already there.
-        // Actually our join-room emits 'user-connected' to others.
+        localStream = await navigator.mediaDevices.getUserMedia(options);
+        if (localVideo && options.video) localVideo.srcObject = localStream;
 
     } catch (error) {
-        console.error('Error starting video call:', error);
+        console.error('Error starting call:', error);
         const msg = error.name === 'NotAllowedError' ?
-            'Accès caméra/micro refusé. Veuillez autoriser l\'accès.' :
+            'Accès média refusé. Veuillez autoriser l\'accès.' :
             'Impossible d\'accéder à la caméra ou au microphone.';
 
         if (window.showNotification) {

@@ -11,7 +11,9 @@
             "logout": "Logout",
             "my_patients": "My Patients",
             "dashboard": "Dashboard",
-            "profile": "Profile"
+            "profile": "Profile",
+            "appointments": "Appointments",
+            "search_patient": "Search patient..."
         },
         "hero": {
             "title": "Your mental well-being,",
@@ -46,6 +48,8 @@
             "password": "Password",
             "confirm": "Confirm Password",
             "terms": "I accept the terms and conditions",
+            "terms_accept": "I accept the",
+            "terms_and": "and the",
             "submit": "Create my account",
             "has_account": "Already have an account?"
         },
@@ -78,21 +82,37 @@
                 "date": "Date",
                 "actions": "Actions",
                 "delete": "Delete"
-            }
+            },
+            "requests": "Session Requests"
+        },
+        "home": {
+            "mood_tracking": "How are you?",
+            "track_mood": "Track your mood"
         },
         "chat": {
             "sidebar": {
                 "search": "Search...",
                 "no_patients": "No patients found",
-                "no_doctors": "No doctors found"
+                "no_doctors": "No doctors found",
+                "no_appointments": "No appointments",
+                "no_appointments_desc": "You don't have any appointments scheduled yet.",
+                "title": "My Discussions",
+                "loading_chats": "Loading chats...",
+                "welcome_title": "Welcome to your health space",
+                "welcome_desc": "Select a discussion or contact a specialist from the home page to start."
             },
             "header": {
                 "video_call": "Start Video Call",
+                "audio_call": "Start Audio Call",
                 "join_video": "Join Call",
                 "share_screen": "Share Screen",
                 "stop_sharing": "Stop Sharing",
+                "view_prescriptions": "View Prescriptions",
                 "add_prescription": "Add Prescription",
-                "view_prescriptions": "View Prescriptions"
+                "select_doctor": "Select a doctor",
+                "select_patient": "Select a patient",
+                "consultation_ongoing": "Consultation in progress",
+                "hang_up": "Hang up"
             },
             "form": {
                 "send": "Send",
@@ -107,7 +127,12 @@
                 "notes": "Intake Notes",
                 "instructions": "General Instructions",
                 "save": "Save Prescription",
-                "download": "Download PDF"
+                "download": "Download PDF",
+                "upload_pdf": "Alternative: Upload PDF",
+                "pdf_ready": "PDF ready to send",
+                "view_pdf": "View PDF",
+                "generate_pdf": "Generate PDF",
+                "doc_attached": "PDF document attached by doctor"
             }
         },
         "profile": {
@@ -156,8 +181,8 @@
             "family_desc": "Create a harmonious family environment and resolve conflicts with the help of our professional family therapists."
         },
         "about": {
-            "title": "About PsyConnect",
-            "desc1": "PsyConnect is an innovative platform that facilitates access to quality psychological care. Our mission is to make psychological support accessible to everyone, everywhere and at any time.",
+            "title": "About Us",
+            "desc1": "Our platform is an innovative platform that facilitates access to quality psychological care. Our mission is to make psychological support accessible to everyone, everywhere and at any time.",
             "desc2": "We collaborate with certified and experienced psychologists who are committed to offering you professional, confidential and caring support.",
             "stats": {
                 "patients": "Satisfied Patients",
@@ -185,7 +210,8 @@
             "logout": "Déconnexion",
             "my_patients": "Mes Patients",
             "dashboard": "Dashboard",
-            "profile": "Profil"
+            "profile": "Profil",
+            "appointments": "Rendez-vous"
         },
         "hero": {
             "title": "Votre bien-être mental,",
@@ -220,6 +246,8 @@
             "password": "Mot de passe",
             "confirm": "Confirmer le mot de passe",
             "terms": "J'accepte les conditions d'utilisation",
+            "terms_accept": "J'accepte les",
+            "terms_and": "et la",
             "submit": "Créer mon compte",
             "has_account": "Vous avez déjà un compte ?"
         },
@@ -252,21 +280,37 @@
                 "date": "Date",
                 "actions": "Actions",
                 "delete": "Supprimer"
-            }
+            },
+            "requests": "Demandes de RDV"
+        },
+        "home": {
+            "mood_tracking": "Comment ça va ?",
+            "track_mood": "Suivre votre humeur"
         },
         "chat": {
             "sidebar": {
                 "search": "Rechercher...",
                 "no_patients": "Aucun patient trouvé",
-                "no_doctors": "Aucun médecin trouvé"
+                "no_doctors": "Aucun médecin trouvé",
+                "no_appointments": "Aucun rendez-vous",
+                "no_appointments_desc": "Vous n'avez pas encore de rendez-vous programmé.",
+                "title": "Mes Discussions",
+                "loading_chats": "Chargement des discussions...",
+                "welcome_title": "Bienvenue dans votre espace santé",
+                "welcome_desc": "Sélectionnez une discussion ou contactez un spécialiste depuis l'accueil pour commencer."
             },
             "header": {
                 "video_call": "Appel Vidéo",
+                "audio_call": "Appel Audio",
                 "join_video": "Rejoindre",
                 "share_screen": "Partager l'écran",
                 "stop_sharing": "Arrêter le partage",
+                "view_prescriptions": "Voir Ordonnances",
                 "add_prescription": "Ajouter Ordonnance",
-                "view_prescriptions": "Voir Ordonnances"
+                "select_doctor": "Sélectionnez un médecin",
+                "select_patient": "Sélectionnez un patient",
+                "consultation_ongoing": "Consultation en cours",
+                "hang_up": "Raccrocher"
             },
             "form": {
                 "send": "Envoyer",
@@ -281,9 +325,9 @@
                 "notes": "Instructions de prise",
                 "instructions": "Instructions générales",
                 "save": "Enregistrer l'ordonnance",
+                "download": "Télécharger PDF",
                 "upload_pdf": "Alternative : Télécharger PDF",
                 "pdf_ready": "PDF prêt à être envoyé",
-                "download": "Télécharger PDF",
                 "view_pdf": "Voir PDF",
                 "generate_pdf": "Générer PDF",
                 "doc_attached": "Document PDF joint par le médecin"
@@ -335,8 +379,8 @@
             "family_desc": "Créez un environnement familial harmonieux et résolvez les conflits avec l'aide de nos thérapeutes familiaux professionnels."
         },
         "about": {
-            "title": "À Propos de PsyConnect",
-            "desc1": "PsyConnect est une plateforme innovante qui facilite l'accès aux soins psychologiques de qualité. Notre mission est de rendre le soutien psychologique accessible à tous, partout et à tout moment.",
+            "title": "À Propos de Nous",
+            "desc1": "Notre plateforme est une plateforme innovante qui facilite l'accès aux soins psychologiques de qualité. Notre mission est de rendre le soutien psychologique accessible à tous, partout et à tout moment.",
             "desc2": "Nous collaborons avec des psychologues certifiés et expérimentés qui s'engagent à vous offrir un accompagnement professionnel, confidentiel et bienveillant.",
             "stats": {
                 "patients": "Patients Satisfaits",
@@ -364,7 +408,8 @@
             "logout": "تسجيل الخروج",
             "my_patients": "مرضاي",
             "dashboard": "لوحة التحكم",
-            "profile": "الملف الشخصي"
+            "profile": "الملف الشخصي",
+            "appointments": "المواعيد"
         },
         "hero": {
             "title": "صحتك النفسية،",
@@ -399,6 +444,8 @@
             "password": "كلمة المرور",
             "confirm": "تأكيد كلمة المرور",
             "terms": "أوافق على الشروط والأحكام",
+            "terms_accept": "أوافق على",
+            "terms_and": "و",
             "submit": "إنشاء حسابي",
             "has_account": "لديك حساب بالفعل؟"
         },
@@ -431,21 +478,37 @@
                 "date": "التاريخ",
                 "actions": "الإجراءات",
                 "delete": "حذف"
-            }
+            },
+            "requests": "طلبات الجلسات"
+        },
+        "home": {
+            "mood_tracking": "كيف حالك؟",
+            "track_mood": "تتبع حالتك المزاجية"
         },
         "chat": {
             "sidebar": {
                 "search": "بحث...",
                 "no_patients": "لم يتم العثور على مرضى",
-                "no_doctors": "لم يتم العثور على أطباء"
+                "no_doctors": "لم يتم العثور على أطباء",
+                "no_appointments": "لا يوجد مواعيد",
+                "no_appointments_desc": "ليس لديك أي مواعيد مجدولة بعد.",
+                "title": "محادثاتي",
+                "loading_chats": "جاري تحميل المحادثات...",
+                "welcome_title": "مرحباً بك في مساحتك الصحية",
+                "welcome_desc": "اختر محادثة أو تواصل مع أخصائي من الصفحة الرئيسية للبدء."
             },
             "header": {
                 "video_call": "بدء مكالمة فيديو",
+                "audio_call": "بدء مكالمة صوتية",
                 "join_video": "الانضمام للمكالمة",
                 "share_screen": "مشاركة الشاشة",
                 "stop_sharing": "إيقاف المشاركة",
+                "view_prescriptions": "عرض الوصفات",
                 "add_prescription": "إضافة وصفة",
-                "view_prescriptions": "عرض الوصفات"
+                "select_doctor": "اختر طبيباً",
+                "select_patient": "اختر مريضاً",
+                "consultation_ongoing": "الاستشارة جارية",
+                "hang_up": "إنهاء المكالمة"
             },
             "form": {
                 "send": "إرسال",
@@ -460,11 +523,11 @@
                 "notes": "تعليمات الاستخدام",
                 "instructions": "تعليمات عامة",
                 "save": "حفظ الوصفة",
+                "download": "تحميل PDF",
                 "upload_pdf": "بديل: تحميل PDF",
                 "pdf_ready": "PDF جاهز للإرسال",
-                "download": "تحميل PDF",
                 "view_pdf": "عرض PDF",
-                "generate_pdf": "توليد PDF",
+                "generate_pdf": "إنشاء ملف PDF",
                 "doc_attached": "مستند PDF مرفق من قبل الطبيب"
             }
         },
@@ -514,8 +577,8 @@
             "family_desc": "خلق بيئة عائلية متناغمة وحل النزاعات بمساعدة معالجينا العائليين المهنيين."
         },
         "about": {
-            "title": "حول PsyConnect",
-            "desc1": "PsyConnect هي منصة مبتكرة تسهل الوصول إلى رعاية نفسية عالية الجودة. مهمتنا هي جعل الدعم النفسي متاحاً للجميع، في كل مكان وفي أي وقت.",
+            "title": "حولنا",
+            "desc1": "منصتنا هي منصة مبتكرة تسهل الوصول إلى رعاية نفسية عالية الجودة. مهمتنا هي جعل الدعم النفسي متاحاً للجميع، في كل مكان وفي أي وقت.",
             "desc2": "نحن نتعاون مع أخصائيين نفسيين معتمدين وذوي خبرة يلتزمون بتقديم دعم مهني وسري ورحيم.",
             "stats": {
                 "patients": "مريض راضٍ",

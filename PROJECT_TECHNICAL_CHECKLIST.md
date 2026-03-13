@@ -13,6 +13,21 @@ This document provides a task-style breakdown of all implemented components, rou
 - [x] **patient-dashboard.html**: (Internal) High-level patient activity hub.
 - [x] **translations.json**: Multilingual dictionary (EN, FR, AR).
 
+## 📱 Mobile App Inventory (React Native)
+- [x] **SplashScreen**: Custom branded animated intro.
+- [x] **LandingScreen**: Welcome screen with auth options.
+- [x] **LoginScreen**: Secure login with JWT storage.
+- [x] **RegisterScreen**: Patient registration.
+- [x] **HomeScreen (Patient)**: Doctor directory and search.
+- [x] **DoctorDashboard**: Specialist overview.
+- [x] **AdminDashboard**: Statistics and quick actions.
+- [x] **CreateDoctorScreen**: Specialist account creation logic.
+- [x] **ProfileScreen**: Personal info and logout.
+- [x] **ChangePasswordScreen**: Secure password updates.
+- [x] **ChatScreen**: real-time messaging implementation.
+- [x] **PatientList (Admin)**: Full management list for admins.
+- [x] **PDF Reporting**: Admin reports on mobile.
+
 ## 🛡️ Backend API Routes
 ### Authentication (/api/auth)
 - [x] `POST /register`: Creates new patient accounts.

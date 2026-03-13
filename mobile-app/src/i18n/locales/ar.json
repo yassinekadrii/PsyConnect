@@ -1,0 +1,198 @@
+{
+    "common": {
+        "login": "تسجيل الدخول",
+        "register": "إنشاء حساب",
+        "home": "الرئيسية",
+        "profile": "الملف الشخصي",
+        "loading": "جاري التحميل...",
+        "error": "خطأ",
+        "success": "نجاح",
+        "cancel": "إلغاء",
+        "logout": "تسجيل الخروج",
+        "welcome": "مرحباً",
+        "back": "رجوع",
+        "save": "حفظ",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "patient": "مريض",
+        "specialist": "أخصائي",
+        "phone": "الهاتف",
+        "not_provided": "غير متوفر",
+        "made_by": "تم التطوير بواسطة ياسين قدري",
+        "see_all": "عرض الكل",
+        "show_all": "إظهار الكل",
+        "user": "مستخدم",
+        "language": "اللغة",
+        "info": "معلومات",
+        "first_name": "الاسم الأول",
+        "last_name": "الاسم الأخير",
+        "specialty": "التخصص",
+        "location": "الموقع",
+        "app_name": "طمئن",
+        "available": "متوفر",
+        "video": "فيديو",
+        "chat": "محادثة",
+        "session": "جلسة",
+        "consult": "استشارة",
+        "messages": "الرسائل",
+        "dashboard": "لوحة التحكم",
+        "welcome_back": "مرحباً بعودتك!",
+        "settings": "الإعدادات",
+        "yesterday": "أمس",
+        "add": "إضافة",
+        "medicine": "دواء",
+        "medicines": "الأدوية",
+        "dosage": "الجرعة",
+        "duration": "المدة",
+        "notes": "ملاحظات",
+        "instructions": "تعليمات"
+    },
+    "nav": {
+        "home": "الرئيسية",
+        "services": "الخدمات",
+        "specialists": "الأخصائيون",
+        "contact": "اتصل بنا"
+    },
+    "auth": {
+        "title": "مرحباً بعودتك!",
+        "subtitle": "سجل دخولك للوصول إلى مساحتك",
+        "dont_have_account": "ليس لديك حساب؟",
+        "already_have_account": "لديك حساب بالفعل؟",
+        "signup_link": "سجل الآن",
+        "login_link": "تسجيل الدخول",
+        "logout_confirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+        "conn_error": "خطأ في الاتصال",
+        "server_unreachable": "تعذر الاتصال بالخادم.",
+        "passwords_dont_match": "كلمات المرور غير متطابقة",
+        "account_created": "تم إنشاء الحساب! يرجى تسجيل الدخول.",
+        "registration_failed": "فشل التسجيل. تحقق من اتصالك.",
+        "signup_title": "إنشاء حساب",
+        "tagline": "راحتك النفسية، أولويتنا"
+    },
+    "landing": {
+        "title": "اعتنِ بصحتك النفسية",
+        "subtitle": "ربط المرضى بالأخصائيين المعتمدين للحصول على دعم آمن وسري.",
+        "get_started": "ابدأ الآن"
+    },
+    "hero": {
+        "badge": "المنصة الأولى للطب النفسي",
+        "title_part1": "راحتك النفسية هي",
+        "title_part2": "أولويتنا",
+        "subtitle": "استشر أخصائيين نفسيين من منزلك. علاج آمن، سري ومتاح للجميع.",
+        "start_button": "ابدأ الآن",
+        "learn_more_button": "لمعرفة المزيد"
+    },
+    "stats": {
+        "users": "مستخدمين",
+        "specialists": "أخصائيين",
+        "sessions": "جلسات"
+    },
+    "specialists": {
+        "tag": "خبراء",
+        "title": "أخصائيونا"
+    },
+    "services": {
+        "tag": "خدماتنا",
+        "title": "كيف نساعدك",
+        "video": {
+            "title": "استشارة فيديو",
+            "desc": "تحدث وجهاً لوجه مع معالجك عبر منصتنا الآمنة."
+        },
+        "chat": {
+            "title": "محادثة خاصة",
+            "desc": "تواصل عبر الرسائل الفورية لمتابعة يومية ومرنة."
+        },
+        "booking": {
+            "title": "حجز مرن",
+            "desc": "احجز موعداً في خطوات بسيطة حسب توفرك."
+        }
+    },
+    "footer": {
+        "tagline": "جعل العلاج النفسي متاحاً للجميع وفي كل مكان."
+    },
+    "profile": {
+        "account_settings": "إعدادات الحساب",
+        "personal_info": "المعلومات الشخصية",
+        "security": "الأمان",
+        "change_password": "تغيير كلمة المرور",
+        "preferences": "التفضيلات",
+        "notifications": "الإشعارات",
+        "logout_text": "تسجيل الخروج"
+    },
+    "admin": {
+        "dashboard_title": "لوحة تحكم المسؤول",
+        "management_subtitle": "إدارة المنصة",
+        "total_patients": "إجمالي المرضى",
+        "total_doctors": "إجمالي الأطباء",
+        "prescriptions": "الوصفات الطبية",
+        "messages": "الرسائل",
+        "quick_actions": "إجراءات سريعة",
+        "add_doctor": "إضافة طبيب",
+        "patient_list": "قائمة المرضى",
+        "pdf_report": "تقرير PDF",
+        "recent_activity": "النشاط الأخير",
+        "new_doctor_registered": "تم تسجيل طبيب جديد",
+        "hours_ago": "منذ {{count}} ساعات",
+        "fill_required_fields": "يرجى ملء جميع الحقول المطلوبة.",
+        "doctor_created_success": "تم إنشاء حساب الطبيب بنجاح.",
+        "create_failed": "فشل الإنشاء",
+        "creation_error": "خطأ في الإنشاء",
+        "new_doctor": "طبيب جديد",
+        "specialty_placeholder": "أخصائي نفسي عيادي",
+        "create_doctor_btn": "إنشاء حساب طبيب",
+        "prescription_created_success": "تم إنشاء الوصفة الطبية بنجاح.",
+        "doctor_list": "قائمة الأطباء"
+    },
+    "home": {
+        "welcome": "مرحباً",
+        "search_placeholder": "ابحث عن أخصائي...",
+        "categories": "الفئات",
+        "recommended_specialists": "أخصائيون موصى بهم",
+        "no_specialists_found": "لم يتم العثور على أخصائيين",
+        "load_doctors_error": "تعذر تحميل الأخصائيين. تحقق من اتصالك.",
+        "logout_confirmation": "هل تريد حقاً تسجيل الخروج؟",
+        "loading_specialists": "جاري البحث عن أفضل الأخصائيين...",
+        "results_for": "نتائج لـ \"{{query}}\"",
+        "our_specialists": "أخصائيونا",
+        "empty_subtitle": "حاول تعديل معايير البحث الخاصة بك."
+    },
+    "categories": {
+        "anxiety": "القلق",
+        "depression": "الاكتئاب",
+        "couple": "علاقات",
+        "sleep": "النوم"
+    },
+    "chat": {
+        "title": "المحادثة",
+        "video_call": "مكالمة فيديو",
+        "video_call_init": "جاري بدء مكالمة فيديو آمنة...",
+        "join": "انضمام",
+        "video_call_soon": "",
+        "send_error": "فشل إرسال الرسالة",
+        "type_message": "اكتب رسالة...",
+        "no_conversations": "لم يتم العثور على محادثات",
+        "failed_fetch_conversations": "تعذر تحميل محادثاتك.",
+        "doctor_empty_hint": "ابدأ بالتحقق من قائمة المرضى الخاصة بك.",
+        "patient_empty_hint": "ابدأ باستشارة أخصائي."
+    },
+    "splash": {
+        "tagline": "راحتك النفسية تبدأ من هنا"
+    },
+    "doctor": {
+        "patients": "مرضاي",
+        "quick_actions": "إجراءات سريعة",
+        "recent_consultations": "الاستشارات الأخيرة",
+        "no_recent_consultations": "لا توجد استشارات أخيرة",
+        "failed_fetch_patients": "تعذر تحميل قائمة المرضى.",
+        "no_patients": "لم يتم العثور على مرضى"
+    },
+    "days": {
+        "sun": "أحد",
+        "mon": "اثنين",
+        "tue": "ثلاثاء",
+        "wed": "أربعاء",
+        "thu": "خميس",
+        "fri": "جمعة",
+        "sat": "سبت"
+    }
+}

@@ -11,9 +11,20 @@
 
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const fs = require('fs');
+const path = require('path');
+
+const LOG_FILE = path.join(process.cwd(), 'api-debug.log');
+
+const logToDebug = (message) => {
+    const timestamp = new Date().toISOString();
+    fs.appendFileSync(LOG_FILE, `[${timestamp}] AUTH_TRACE: ${message}\n`);
+};
 
 // Middleware to verify JWT token
 const auth = async (req, res, next) => {
+    const requestId = Math.random().toString(36).substring(7);
+    logToDebug(`[${requestId}] START ${req.method} ${req.originalUrl}`);
     try {
         // Get token from header
         const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -42,8 +53,10 @@ const auth = async (req, res, next) => {
         req.user = user;
         req.userId = decoded.userId;
 
+        logToDebug(`[${requestId}] SUCCESS Authenticated as ${user.email} (${user.role})`);
         next();
     } catch (error) {
+        logToDebug(`[${requestId}] ERROR: ${error.message}`);
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({
                 success: false,

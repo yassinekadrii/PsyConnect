@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trouver un Médecin - PsyConnect</title>
+    <title>Trouver un Médecin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -47,10 +47,14 @@
         }
 
         .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--primary-color);
             text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
         }
 
         .container {
@@ -171,7 +175,9 @@
 
 <body>
     <nav class="navbar">
-        <a href="index.html" class="logo">PsyConnect</a>
+        <a href="index.html" class="logo">
+            <img src="images/image.png" alt="Logo">
+        </a>
         <div id="userMenu">
             <button onclick="logout()"
                 style="padding: 0.5rem 1rem; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer;">Déconnexion</button>
@@ -194,6 +200,19 @@
 
     <script>
         const API_URL = '/api';
+
+        // Helper for fetch with timeout
+        async function fetchWithTimeout(resource, options = {}) {
+            const { timeout = 10000 } = options;
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(resource, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(id);
+            return response;
+        }
 
         // Check auth
         const token = localStorage.getItem('token');
@@ -221,7 +240,7 @@
 
         async function fetchDoctors() {
             try {
-                const response = await fetch(`${API_URL}/patient/doctors`);
+                const response = await fetchWithTimeout(`${API_URL}/patient/doctors`);
                 const data = await response.json();
 
                 const grid = document.getElementById('doctorsGrid');
@@ -250,7 +269,11 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('doctorsGrid').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Erreur de chargement.</p>';
+                const msg = error.name === 'AbortError' ? 'Le serveur met trop de temps à répondre.' : 'Erreur de chargement des médecins.';
+                document.getElementById('doctorsGrid').innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">${msg}</p>`;
+                if (typeof showNotification === 'function') {
+                    showNotification(msg, 'error');
+                }
             }
         }
 

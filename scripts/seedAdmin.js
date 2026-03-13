@@ -16,9 +16,10 @@ const ADMIN_DATA = {
     lastName: 'PsyConnect',
     email: 'admin@psyconnect.com',
     phone: '+33 6 00 00 00 00',
-    password: '123456',
+    password: 'password123',
     role: 'admin',
-    isSuperAdmin: true
+    isSuperAdmin: true,
+    isVerified: true
 };
 
 const seedAdmin = async () => {

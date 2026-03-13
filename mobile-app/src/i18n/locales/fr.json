@@ -1,0 +1,212 @@
+{
+    "common": {
+        "login": "Connexion",
+        "register": "Inscription",
+        "home": "Accueil",
+        "profile": "Profil",
+        "loading": "Chargement...",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "logout": "Déconnexion",
+        "welcome": "Bienvenue",
+        "back": "Retour",
+        "save": "Enregistrer",
+        "email": "Adresse email",
+        "password": "Mot de passe",
+        "patient": "Patient",
+        "specialist": "Spécialiste",
+        "phone": "Téléphone",
+        "not_provided": "Non renseigné",
+        "made_by": "Développé par Yassine Kadri",
+        "see_all": "Voir tout",
+        "show_all": "Tout afficher",
+        "user": "Utilisateur",
+        "language": "Langue",
+        "info": "Info",
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "specialty": "Spécialité",
+        "location": "Localisation",
+        "app_name": "طمئن",
+        "available": "Disponible",
+        "video": "Vidéo",
+        "chat": "Chat",
+        "session": "séance",
+        "consult": "Consulter",
+        "messages": "Messages",
+        "dashboard": "Tableau de Bord",
+        "welcome_back": "Bon retour !",
+        "settings": "Paramètres",
+        "yesterday": "Hier",
+        "add": "Ajouter",
+        "medicine": "Médicament",
+        "medicines": "Médicaments",
+        "dosage": "Dosage",
+        "duration": "Durée",
+        "notes": "Notes",
+        "instructions": "Instructions"
+    },
+    "nav": {
+        "home": "Accueil",
+        "services": "Services",
+        "specialists": "Spécialistes",
+        "contact": "Contact"
+    },
+    "auth": {
+        "title": "Bon retour !",
+        "subtitle": "Connectez-vous pour accéder à votre espace",
+        "dont_have_account": "Vous n'avez pas de compte ?",
+        "already_have_account": "Vous avez déjà un compte ?",
+        "signup_link": "S'inscrire",
+        "login_link": "Se connecter",
+        "logout_confirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
+        "conn_error": "Erreur de Connexion",
+        "server_unreachable": "Impossible de joindre le serveur.",
+        "passwords_dont_match": "Les mots de passe ne correspondent pas",
+        "account_created": "Compte créé ! Veuillez vous connecter.",
+        "registration_failed": "Inscription échouée. Vérifiez votre connexion.",
+        "signup_title": "Créer un compte",
+        "tagline": "Votre bien-être mental, notre priorité",
+        "account_created_verify": "Compte créé ! Veuillez vérifier votre email.",
+        "verification": "Vérification",
+        "verify_email_title": "Vérifiez votre boîte mail",
+        "verify_email_desc": "Nous avons envoyé un code de vérification à :",
+        "verify_now": "Vérifier maintenant",
+        "no_code": "Vous n'avez pas reçu de code ?",
+        "resend_in": "Renvoyer dans",
+        "resend_now": "Renvoyer",
+        "otp_resent": "Un nouveau code a été envoyé.",
+        "not_verified": "Compte non vérifié",
+        "verify_email_first": "Veuillez vérifier votre email pour continuer.",
+        "invalid_otp": "Veuillez entrer le code à 6 chiffres.",
+        "verify_error": "Erreur lors de la vérification",
+        "resend_error": "Erreur lors de l'envoi du code"
+    },
+    "landing": {
+        "title": "Prenez soin de votre santé mentale",
+        "subtitle": "Connectez les patients avec des spécialistes certifiés pour un soutien sûr et confidentiel.",
+        "get_started": "Commencer"
+    },
+    "hero": {
+        "badge": "Plateforme #1 de Psychologie",
+        "title_part1": "Votre bien-être notre",
+        "title_part2": "priorité",
+        "subtitle": "Consultez des psychologues qualifiés depuis le confort de votre domicile. Thérapie sécurisée, confidentielle et accessible.",
+        "start_button": "Commencer",
+        "learn_more_button": "En savoir plus"
+    },
+    "stats": {
+        "users": "Utilisateurs",
+        "specialists": "Spécialistes",
+        "sessions": "Sessions"
+    },
+    "specialists": {
+        "tag": "Experts",
+        "title": "Nos Spécialistes"
+    },
+    "services": {
+        "tag": "Services",
+        "title": "Comment nous vous aidons",
+        "video": {
+            "title": "Vidéo Consultation",
+            "desc": "Parlez en face à face avec votre thérapeute via notre plateforme sécurisée."
+        },
+        "chat": {
+            "title": "Chat Privé",
+            "desc": "Échangez par messages instantanés pour un suivi quotidien et flexible."
+        },
+        "booking": {
+            "title": "RDV Flexible",
+            "desc": "Prenez rendez-vous en quelques clics selon vos disponibilités."
+        }
+    },
+    "footer": {
+        "tagline": "Rendre la thérapie accessible à tous, partout."
+    },
+    "profile": {
+        "account_settings": "Paramètres du compte",
+        "personal_info": "Informations personnelles",
+        "security": "Sécurité",
+        "change_password": "Changer le mot de passe",
+        "preferences": "Préférences",
+        "notifications": "Notifications",
+        "logout_text": "Se déconnecter"
+    },
+    "admin": {
+        "dashboard_title": "Tableau de Bord Admin",
+        "management_subtitle": "Gestion de la plateforme",
+        "total_patients": "Total Patients",
+        "total_doctors": "Total Médecins",
+        "prescriptions": "Ordonnances",
+        "messages": "Messages",
+        "quick_actions": "Actions Rapides",
+        "add_doctor": "Ajouter Médecin",
+        "patient_list": "Liste Patients",
+        "pdf_report": "Rapport PDF",
+        "recent_activity": "Activité Récente",
+        "new_doctor_registered": "Nouveau docteur inscrit",
+        "hours_ago": "Il y a {{count}} heures",
+        "fill_required_fields": "Veuillez remplir tous les champs obligatoires.",
+        "doctor_created_success": "Le compte médecin a été créé avec succès.",
+        "create_failed": "Échec de la création",
+        "creation_error": "Erreur de Création",
+        "new_doctor": "Nouveau Médecin",
+        "specialty_placeholder": "Psychologue clinicien",
+        "create_doctor_btn": "Créer le compte médecin",
+        "prescription_created_success": "L'ordonnance a été créée avec succès.",
+        "doctor_list": "Liste des médecins"
+    },
+    "home": {
+        "welcome": "Bonjour",
+        "search_placeholder": "Trouver un spécialiste...",
+        "categories": "Catégories",
+        "recommended_specialists": "Spécialistes recommandés",
+        "no_specialists_found": "Aucun spécialiste trouvé",
+        "load_doctors_error": "Impossible de charger les spécialistes. Vérifiez votre connexion.",
+        "logout_confirmation": "Voulez-vous vraiment vous déconnecter ?",
+        "loading_specialists": "Recherche des meilleurs spécialistes...",
+        "results_for": "Résultats pour \"{{query}}\"",
+        "our_specialists": "Nos Spécialistes",
+        "empty_subtitle": "Essayez de modifier vos critères de recherche."
+    },
+    "categories": {
+        "anxiety": "Anxiété",
+        "depression": "Dépression",
+        "couple": "Couple",
+        "sleep": "Sommeil"
+    },
+    "chat": {
+        "title": "Chat",
+        "video_call": "Appel Vidéo",
+        "video_call_init": "Initialisation de l'appel vidéo sécurisé...",
+        "join": "Rejoindre",
+        "video_call_soon": "",
+        "send_error": "Échec de l'envoi du message",
+        "type_message": "Tapez un message...",
+        "no_conversations": "Aucune conversation trouvée",
+        "failed_fetch_conversations": "Impossible de charger vos conversations.",
+        "doctor_empty_hint": "Commencez par consulter votre liste de patients.",
+        "patient_empty_hint": "Commencez par consulter un spécialiste."
+    },
+    "splash": {
+        "tagline": "Votre bien-être mental commence ici"
+    },
+    "doctor": {
+        "patients": "Mes Patients",
+        "quick_actions": "Actions Rapides",
+        "recent_consultations": "Consultations Récentes",
+        "no_recent_consultations": "Aucune consultation récente",
+        "failed_fetch_patients": "Impossible de charger la liste des patients.",
+        "no_patients": "Aucun patient trouvé"
+    },
+    "days": {
+        "sun": "Dim",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam"
+    }
+}

@@ -84,6 +84,18 @@ const userSchema = new mongoose.Schema({
     enum: ['online', 'presence', 'both'],
     default: 'online'
   },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationOTP: {
+    type: String,
+    select: false
+  },
+  otpExpires: {
+    type: Date,
+    select: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

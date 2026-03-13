@@ -13,24 +13,44 @@ const User = require('../models/User');
 const Message = require('../models/Message');
 const Prescription = require('../models/Prescription');
 
+const fs = require('fs');
+
 // @desc    Create a new doctor account
 // @route   POST /api/admin/create-doctor
 // @access  Admin only
 const createDoctor = async (req, res) => {
+    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ENTERING createDoctor\n`);
     try {
-        const { firstName, lastName, email, phone, password } = req.body;
+        const { firstName, lastName, email, phone, password, specialty, location } = req.body;
 
         // Validate required fields
-        if (!firstName || !lastName || !email || !phone || !password) {
+        const missing = [];
+        if (!firstName) missing.push('Prénom');
+        if (!lastName) missing.push('Nom');
+        if (!email) missing.push('Email');
+        if (!phone) missing.push('Téléphone');
+        if (!password) missing.push('Mot de passe');
+
+        if (missing.length > 0) {
+            console.log('[createDoctor] Missing fields:', missing);
             return res.status(400).json({
                 success: false,
-                message: 'Tous les champs sont requis.'
+                message: `Les champs suivants sont requis : ${missing.join(', ')}`
+            });
+        }
+
+        // Check password length explicitly
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: 'Le mot de passe doit contenir au moins 8 caractères.'
             });
         }
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
+            console.log('[createDoctor] Email already exists:', email);
             return res.status(400).json({
                 success: false,
                 message: 'Un utilisateur avec cet email existe déjà.'
@@ -44,10 +64,14 @@ const createDoctor = async (req, res) => {
             email,
             phone,
             password,
-            role: 'doctor'
+            specialty,
+            location,
+            role: 'doctor',
+            isVerified: true
         });
 
         await doctor.save();
+        console.log('[createDoctor] Doctor created successfully:', email);
 
         res.status(201).json({
             success: true,
@@ -71,11 +95,31 @@ const createDoctor = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Create doctor error:', error);
+        console.error('[createDoctor] Catch Error:', error);
+
+        // Handle Mongoose Validation Error
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', '),
+                debug: { errors: error.errors }
+            });
+        }
+
+        // Handle Duplicate Key Error (Unique Index)
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cet email est déjà utilisé par un autre compte.'
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Erreur lors de la création du compte médecin.',
-            error: error.message
+            error: error.message,
+            debug: { bodyReceived: req.body }
         });
     }
 };
@@ -84,26 +128,40 @@ const createDoctor = async (req, res) => {
 // @route   GET /api/admin/dashboard
 // @access  Admin only
 const getDashboardStats = async (req, res) => {
+    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ENTERING getDashboardStats for user ${req.user.email}\n`);
     try {
-        const totalPatients = await User.countDocuments({ role: 'patient' });
-        const totalDoctors = await User.countDocuments({ role: 'doctor' });
-        const totalUsers = await User.countDocuments();
-        const totalMessages = await Message.countDocuments();
-        const totalPrescriptions = await Prescription.countDocuments();
-
-        // Get recent registrations (last 30 days)
+        console.log('Fetching dashboard stats...');
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+        logToDebug(`[${req.user.email}] Fetching Patients...`);
+        const totalPatients = await User.countDocuments({ role: 'patient' });
+        
+        logToDebug(`[${req.user.email}] Fetching Doctors...`);
+        const totalDoctors = await User.countDocuments({ role: 'doctor' });
+        
+        logToDebug(`[${req.user.email}] Fetching All Users...`);
+        const totalUsers = await User.countDocuments();
+        
+        logToDebug(`[${req.user.email}] Fetching Messages...`);
+        const totalMessages = await Message.countDocuments();
+        
+        logToDebug(`[${req.user.email}] Fetching Prescriptions...`);
+        const totalPrescriptions = await Prescription.countDocuments();
+
+        logToDebug(`[${req.user.email}] Fetching Recent Patients...`);
         const recentPatients = await User.countDocuments({
             role: 'patient',
             createdAt: { $gte: thirtyDaysAgo }
         });
 
+        logToDebug(`[${req.user.email}] Fetching Recent Doctors...`);
         const recentDoctors = await User.countDocuments({
             role: 'doctor',
             createdAt: { $gte: thirtyDaysAgo }
         });
+
+        logToDebug(`[${req.user.email}] Dashboard stats gathered successfully`);
 
         res.status(200).json({
             success: true,
@@ -131,6 +189,7 @@ const getDashboardStats = async (req, res) => {
 // @route   GET /api/admin/doctors
 // @access  Admin only
 const getAllDoctors = async (req, res) => {
+    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ENTERING getAllDoctors\n`);
     try {
         const doctors = await User.find({ role: 'doctor' })
             .select('-password')
@@ -192,6 +251,7 @@ const deleteDoctor = async (req, res) => {
 // @route   GET /api/admin/patients
 // @access  Admin only
 const getAllPatients = async (req, res) => {
+    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ENTERING getAllPatients\n`);
     try {
         const patients = await User.find({ role: 'patient' })
             .select('-password')

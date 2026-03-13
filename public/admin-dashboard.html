@@ -13,8 +13,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tableau de bord administrateur - PsyConnect">
-    <title>Admin Dashboard - PsyConnect</title>
+    <meta name="description" content="Tableau de bord administrateur">
+    <title>Admin Dashboard</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
         rel="stylesheet">
@@ -54,6 +54,7 @@
         .dashboard-container {
             display: flex;
             min-height: 100vh;
+            min-height: 100dvh;
         }
 
         /* Sidebar */
@@ -64,6 +65,7 @@
             padding: 2rem 0;
             position: fixed;
             height: 100vh;
+            height: 100dvh;
             overflow-y: auto;
         }
 
@@ -73,12 +75,13 @@
         }
 
         .logo h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            display: none;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            display: block;
         }
 
         .logo p {
@@ -398,7 +401,9 @@
                     <button class="lang-btn" id="langSwitcher" onclick="toggleLanguage()"
                         style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
                 </div>
-                <h1>PsyConnect</h1>
+                <div style="margin-bottom: 1.5rem;">
+                    <img src="images/image.png" alt="Logo" style="height: 50px; width: auto;">
+                </div>
                 <p data-i18n="login.subtitle">Votre bien-être mental, notre priorité</p>
             </div>
             <ul class="nav-menu">
@@ -673,6 +678,19 @@
         const API_URL = '/api';
         let token = localStorage.getItem('token');
 
+        // Helper for fetch with timeout
+        async function fetchWithTimeout(resource, options = {}) {
+            const { timeout = 10000 } = options;
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(resource, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(id);
+            return response;
+        }
+
         // Check authentication & Super Admin
         function checkAuth() {
             if (!token) {
@@ -731,7 +749,7 @@
         // Load dashboard stats
         async function loadDashboardStats() {
             try {
-                const response = await fetch(`${API_URL}/admin/dashboard`, {
+                const response = await fetchWithTimeout(`${API_URL}/admin/dashboard`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -747,11 +765,23 @@
                     document.getElementById('recentPatients').textContent = data.stats.recentPatients;
                     document.getElementById('recentDoctors').textContent = data.stats.recentDoctors;
 
+                    // Update totals if elements exist (they might be in different cards)
+                    if (document.getElementById('totalUsers')) {
+                        document.getElementById('totalUsers').textContent = data.stats.totalUsers;
+                    }
+
                     // Store stats for PDF export
                     window.currentStats = data.stats;
+                } else {
+                    showNotification(data.message || 'Erreur lors du chargement des statistiques', 'error');
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
+                if (error.name === 'AbortError') {
+                    showNotification('Le serveur met trop de temps à répondre. Veuillez réessayer.', 'error');
+                } else {
+                    showNotification('Erreur de connexion au serveur.', 'error');
+                }
             }
         }
 
@@ -767,14 +797,14 @@
             element.style.fontFamily = 'Inter, sans-serif';
             element.innerHTML = `
                 <div style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #6366f1; padding-bottom: 20px;">
-                    <h1 style="color: #6366f1; margin: 0;">PsyConnect</h1>
+                    <h1 style="color: #6366f1; margin: 0;">Administration</h1>
                     <p style="color: #64748b; margin-top: 5px;">Rapport de Statistiques Plateforme</p>
                 </div>
                 
                 <div style="margin-bottom: 40px; display: flex; justify-content: space-between;">
                     <div>
                         <p style="margin: 0; color: #64748b; font-size: 0.9rem;">Généré par :</p>
-                        <h3 style="margin: 5px 0;">Administration PsyConnect</h3>
+                        <h3 style="margin: 5px 0;">Rapport de Plateforme</h3>
                     </div>
                     <div style="text-align: right;">
                         <p style="margin: 0; color: #64748b; font-size: 0.9rem;">Date du rapport :</p>
@@ -820,13 +850,13 @@
                 </div>
 
                 <div style="margin-top: 60px; text-align: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                    Rapport confidentiel généré via le portail administratif PsyConnect.
+                    Rapport confidentiel généré via le portail administratif.
                 </div>
             `;
 
             const opt = {
                 margin: 0,
-                filename: `Rapport_PsyConnect_${new Date().toLocaleDateString('fr-CA')}.pdf`,
+                filename: `Rapport_Platforme_${new Date().toLocaleDateString('fr-CA')}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -835,10 +865,9 @@
             html2pdf().set(opt).from(element).save();
         }
 
-        // Load patients list
         async function loadPatients() {
             try {
-                const response = await fetch(`${API_URL}/admin/patients`, {
+                const response = await fetchWithTimeout(`${API_URL}/admin/patients`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -863,17 +892,22 @@
                             </tr>
                         `).join('');
                     }
+                } else {
+                    showNotification(data.message || 'Erreur lors du chargement des patients', 'error');
+                    document.getElementById('patientsTableBody').innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Erreur de chargement</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading patients:', error);
+                const msg = error.name === 'AbortError' ? 'Temps d\'attente dépassé' : 'Erreur de connexion';
+                showNotification(msg, 'error');
+                document.getElementById('patientsTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">${msg}</td></tr>`;
             }
         }
 
-        // Load doctors list
         async function loadDoctors() {
             // ... (keep existing loadDoctors logic) ...
             try {
-                const response = await fetch(`${API_URL}/admin/doctors`, {
+                const response = await fetchWithTimeout(`${API_URL}/admin/doctors`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -899,9 +933,15 @@
                             </tr>
                         `).join('');
                     }
+                } else {
+                    showNotification(data.message || 'Erreur lors du chargement des médecins', 'error');
+                    document.getElementById('doctorsTableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Erreur de chargement</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading doctors:', error);
+                const msg = error.name === 'AbortError' ? 'Temps d\'attente dépassé' : 'Erreur de connexion';
+                showNotification(msg, 'error');
+                document.getElementById('doctorsTableBody').innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">${msg}</td></tr>`;
             }
         }
 

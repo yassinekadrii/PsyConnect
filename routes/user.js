@@ -3,6 +3,34 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const { auth } = require('../middleware/auth');
 const User = require('../models/User');
+const multer = require('multer');
+const path = require('path');
+
+// Configure storage
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+        const filetypes = /jpeg|jpg|png/;
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+});
 
 // Update profile (Password usually)
 router.put('/profile', auth, async (req, res) => {
@@ -63,6 +91,35 @@ router.put('/profile', auth, async (req, res) => {
     } catch (error) {
         console.error('Error updating profile:', error);
         res.status(500).json({ success: false, message: 'Erreur lors de la mise à jour du profil' });
+    }
+});
+
+// Upload profile picture
+router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Veuillez sélectionner une image' });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+        }
+
+        // Save the file path in the user model
+        // We store the relative path that can be served via /uploads
+        const avatarUrl = `/uploads/${req.file.filename}`;
+        user.profilePicture = avatarUrl;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Photo de profil mise à jour',
+            profilePicture: avatarUrl
+        });
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        res.status(500).json({ success: false, message: error.message || 'Erreur lors de l\'upload' });
     }
 });
 

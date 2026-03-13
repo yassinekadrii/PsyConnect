@@ -23,6 +23,15 @@ const MessageSchema = new mongoose.Schema({
     isRead: {
         type: Boolean,
         default: false
+    },
+    sentiment: {
+        type: String,
+        enum: ['positive', 'neutral', 'negative'],
+        default: 'neutral'
+    },
+    moodScore: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 

@@ -4,7 +4,16 @@
  */
 
 const express = require('express');
-const { register, login } = require('../controllers/authController');
+const {
+    register,
+    login,
+    getMe,
+    updateProfile,
+    updatePassword,
+    verifyEmail,
+    resendOTP
+} = require('../controllers/authController');
+const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -17,5 +26,30 @@ router.post('/register', register);
 // @desc    Login user (all roles)
 // @access  Public
 router.post('/login', login);
+
+// @route   GET /api/auth/me
+// @desc    Get current logged-in user (session restore for web & mobile)
+// @access  Private
+router.get('/me', auth, getMe);
+
+// @route   PUT /api/auth/profile
+// @desc    Update user profile
+// @access  Private
+router.put('/profile', auth, updateProfile);
+
+// @route   PUT /api/auth/password
+// @desc    Update password
+// @access  Private
+router.put('/password', auth, updatePassword);
+
+// @route   POST /api/auth/verify-email
+// @desc    Verify email with OTP
+// @access  Public
+router.post('/verify-email', verifyEmail);
+
+// @route   POST /api/auth/resend-otp
+// @desc    Resend OTP
+// @access  Public
+router.post('/resend-otp', resendOTP);
 
 module.exports = router;

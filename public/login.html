@@ -13,8 +13,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Connexion à PsyConnect - Accédez à votre espace personnel">
-    <title>Connexion - PsyConnect</title>
+    <meta name="description" content="Connexion - Accédez à votre espace personnel">
+    <title>Connexion</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
         rel="stylesheet">
@@ -125,14 +125,14 @@
         }
 
         .logo h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--gradient-1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
+            display: none;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+            display: block;
+            margin: 0 auto 1rem;
         }
 
         .logo p {
@@ -364,6 +364,56 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Verification Section */
+        #verificationSection {
+            display: none;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .otp-input {
+            width: 45px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .resend-container {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .resend-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .resend-link.disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
     </style>
     <script src="js/i18n.js"></script>
     <script src="js/notifications.js"></script>
@@ -377,7 +427,7 @@
                     style="border: 1px solid var(--border-color); background: white; cursor: pointer; font-size: 0.9rem; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: 600;">FR</button>
             </div>
             <div class="logo">
-                <h1>PsyConnect</h1>
+                <img src="images/image.png" alt="Logo">
                 <p data-i18n="login.subtitle">Votre bien-être mental, notre priorité</p>
             </div>
 
@@ -413,8 +463,36 @@
                 <button type="submit" class="btn-login" data-i18n="login.submit">Se connecter</button>
             </form>
 
+            <!-- Verification Section -->
+            <div id="verificationSection">
+                <div class="form-header">
+                    <h2 data-i18n="verify.title">Vérifiez votre email</h2>
+                    <p data-i18n="verify.subtitle">Votre compte n'est pas encore vérifié. Entrez le code envoyé à <span
+                            id="displayEmail" style="font-weight: 600; color: var(--text-dark);"></span></p>
+                </div>
+
+                <div class="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                    <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+                </div>
+
+                <button type="button" class="btn-login" id="btnVerify" onclick="handleVerify()" data-i18n="common.save">Vérifier</button>
+
+                <div class="resend-container">
+                    <span data-i18n="verify.no_code">Vous n'avez pas reçu de code ?</span>
+                    <a class="resend-link" id="resendCode" onclick="handleResendOTP()">Renvoyer</a>
+                </div>
+                <div class="back-home" style="margin-top: 1rem;">
+                    <a href="#" onclick="showLoginForm()" data-i18n="login.back_home">← Retour à la connexion</a>
+                </div>
+            </div>
+
             <div class="register-link">
-                <span data-i18n="login.no_account_text">Vous n'avez pas de compte ?</span> <a href="register.html"
+                <span data-i18n="login.no_account">Vous n'avez pas de compte ?</span> <a href="register.html"
                     data-i18n="nav.register">S'inscrire</a>
             </div>
 
@@ -482,6 +560,15 @@
                             window.location.href = 'index.html';
                         }
                     }, 1000);
+                } else if (data.needsVerification) {
+                    showNotification('Veuillez vérifier votre email.', 'info');
+
+                    // Show verification section
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('verificationSection').style.display = 'block';
+                    document.getElementById('displayEmail').textContent = data.email || email;
+
+                    setupOTPInputs();
                 } else {
                     showNotification(data.message || 'Email ou mot de passe incorrect', 'error');
                     submitBtn.disabled = false;
@@ -494,6 +581,114 @@
                 submitBtn.textContent = 'Se connecter';
             }
         });
+
+        function showLoginForm() {
+            document.getElementById('verificationSection').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            const submitBtn = document.querySelector('.btn-login');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Se connecter';
+        }
+
+        function setupOTPInputs() {
+            const inputs = document.querySelectorAll('.otp-input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value.length === 1 && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        }
+
+        async function handleVerify() {
+            const inputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(inputs).map(input => input.value).join('');
+            const email = document.getElementById('displayEmail').textContent;
+
+            if (otp.length !== 6) {
+                showNotification('Veuillez entrer le code à 6 chiffres.', 'error');
+                return;
+            }
+
+            const btnVerify = document.getElementById('btnVerify');
+            btnVerify.disabled = true;
+            btnVerify.textContent = 'Vérification...';
+
+            try {
+                const response = await fetch(`${API_URL}/auth/verify-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Email vérifié avec succès !', 'success');
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    showNotification(data.message || 'Code incorrect', 'error');
+                    btnVerify.disabled = false;
+                    btnVerify.textContent = 'Vérifier';
+                }
+            } catch (error) {
+                console.error('Verify error:', error);
+                showNotification('Erreur de connexion.', 'error');
+                btnVerify.disabled = false;
+                btnVerify.textContent = 'Vérifier';
+            }
+        }
+
+        async function handleResendOTP() {
+            const email = document.getElementById('displayEmail').textContent;
+            const resendLink = document.getElementById('resendCode');
+
+            if (resendLink.classList.contains('disabled')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/resend-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Nouveau code envoyé !', 'success');
+                    resendLink.classList.add('disabled');
+                    let timeLeft = 60;
+                    const timer = setInterval(() => {
+                        timeLeft--;
+                        resendLink.textContent = `Attendre (${timeLeft}s)`;
+                        if (timeLeft <= 0) {
+                            clearInterval(timer);
+                            resendLink.classList.remove('disabled');
+                            resendLink.textContent = 'Renvoyer';
+                        }
+                    }, 1000);
+                } else {
+                    showNotification(data.message || 'Erreur lors de l\'envoi', 'error');
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                showNotification('Erreur de connexion.', 'error');
+            }
+        }
     </script>
 </body>
 

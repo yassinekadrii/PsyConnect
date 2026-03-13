@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "طمئن",
+    "slug": "mobile-app",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1040"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.yassinekadri.psyconnect",
+      "usesCleartextTraffic": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "Allow طمئن to access your camera for video consultations.",
+          "microphonePermission": "Allow طمئن to access your microphone for audio consultations."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8b400741-7554-4b25-9970-ceaef980080c"
+      }
+    }
+  }
+}

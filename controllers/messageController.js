@@ -6,6 +6,25 @@
 const Message = require('../models/Message');
 const User = require('../models/User');
 
+const analyzeSentiment = (text) => {
+    const positiveWords = ['bien', 'heureux', 'merci', 'super', 'génial', 'happy', 'good', 'thanks', 'great', 'سعيد', 'شكرا', 'جميل', 'ممتاز', 'شكراً'];
+    const negativeWords = ['triste', 'mal', 'douleur', 'angoisse', 'peur', 'sad', 'bad', 'pain', 'fear', 'anxiety', 'حزين', 'ألم', 'خوف', 'قلق', 'تعبان'];
+
+    let score = 0;
+    const words = text.toLowerCase().split(/\s+/);
+
+    words.forEach(word => {
+        if (positiveWords.some(pw => word.includes(pw))) score += 1;
+        if (negativeWords.some(nw => word.includes(nw))) score -= 1;
+    });
+
+    let sentiment = 'neutral';
+    if (score > 0) sentiment = 'positive';
+    if (score < 0) sentiment = 'negative';
+
+    return { sentiment, score };
+};
+
 // Send a message
 exports.sendMessage = async (req, res) => {
     try {
@@ -17,13 +36,31 @@ exports.sendMessage = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
         }
 
+        const { sentiment, score } = analyzeSentiment(content);
+
         const message = new Message({
             sender: req.user.id,
             receiver: receiverId,
-            content
+            content,
+            sentiment,
+            moodScore: score
         });
 
         await message.save();
+
+        // Emit via socket if io is available
+        if (req.io) {
+            const roomId = [req.user.id, receiverId].sort().join('-');
+            req.io.to(roomId).emit('receive-message', {
+                _id: message._id,
+                sender: req.user.id,
+                receiver: receiverId,
+                content: content,
+                sentiment: sentiment,
+                moodScore: score,
+                createdAt: message.createdAt
+            });
+        }
 
         res.status(201).json({
             success: true,
@@ -84,6 +121,7 @@ exports.getConversations = async (req, res) => {
                 conversations.push({
                     user: otherUser,
                     lastMessage: msg.content,
+                    sentiment: msg.sentiment,
                     timestamp: msg.createdAt
                 });
             }

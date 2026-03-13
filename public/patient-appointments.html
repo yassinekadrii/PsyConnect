@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="nav.appointments">Mes Rendez-vous - طمئن</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&family=Cairo:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="js/i18n.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-body: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text-dark);
+        }
+
+        .appointments-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .appointment-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .doctor-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .details h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        .details p {
+            margin: 5px 0 0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .time-info {
+            text-align: right;
+        }
+
+        .time-info .date {
+            display: block;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-back {
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .btn-back:hover {
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: var(--white);
+            border-radius: 30px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <img src="images/image.png" alt="طمئن Logo">
+        </a>
+        <div class="nav-auth">
+            <button onclick="window.location.href='profile.html'" class="btn-login"
+                style="padding: 0.75rem 1.5rem; background: transparent; color: #6366f1; border: 2px solid #6366f1; border-radius: 50px; font-weight: 600; cursor: pointer;"
+                data-i18n="nav.profile">Mon Profil</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> <span data-i18n="login.back_home">Retour
+                à l'accueil</span></a>
+
+        <div class="header-section">
+            <h1 data-i18n="nav.appointments">Mes Rendez-vous</h1>
+        </div>
+
+        <div id="appointmentsList" class="appointments-grid">
+            <!-- Loading indicator -->
+            <div style="text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #6366f1;"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/appointments/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderAppointments(data.appointments);
+                } else {
+                    console.error('Failed to fetch appointments');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        function renderAppointments(appointments) {
+            const container = document.getElementById('appointmentsList');
+            if (appointments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-day"></i>
+                        <h3 data-i18n="chat.sidebar.no_appointments">Aucun rendez-vous</h3>
+                        <p data-i18n="chat.sidebar.no_appointments_desc">Vous n'avez pas encore de rendez-vous programmé.</p>
+                        <button onclick="window.location.href='index.html'" 
+                            style="margin-top: 20px; padding: 12px 24px; background: var(--gradient); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 600;"
+                            data-i18n="hero.btn_start">Réserver une consultation</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = appointments.map(app => {
+                const date = new Date(app.startTime);
+                const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+                return `
+                    <div class="appointment-card">
+                        <div class="doctor-info">
+                            <div class="doctor-avatar">
+                                ${app.doctor.firstName[0]}
+                            </div>
+                            <div class="details">
+                                <h3>Dr. ${app.doctor.firstName} ${app.doctor.lastName}</h3>
+                                <p>${app.doctor.specialty || 'Spécialiste'}</p>
+                                <p><i class="fas fa-video"></i> Consultation en ligne</p>
+                            </div>
+                        </div>
+                        <div class="time-info">
+                            <span class="date">${dateStr}</span>
+                            <span class="time">${timeStr}</span>
+                            <div class="status-badge status-${app.status}">
+                                ${app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>
