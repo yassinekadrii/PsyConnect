@@ -1,0 +1,116 @@
+Class Diagram for PsyConnect
+
++-------------------------------------------------------------+
+|                          User                               |
+|-------------------------------------------------------------|
+| - id: String                                                |
+| - firstName: String                                         |
+| - lastName: String                                          |
+| - email: String                                             |
+| - passwordHash: String                                      |
+| - role: Enum(PATIENT, DOCTOR, ADMIN)                        |
+| - createdAt: Date                                           |
+| - updatedAt: Date                                           |
+|-------------------------------------------------------------|
+| + login(): Boolean                                          |
+| + logout(): void                                            |
+| + updateProfile(data): void                                 |
+| + resetPassword(newPassword): void                          |
++-------------------------------------------------------------+
+                              ^
+                              | (Inheritance)
+         +--------------------+--------------------+
+         |                                         |
++-------------------------+             +-------------------------+
+|        Patient          |             |       Psychologist      |
+|-------------------------|             |-------------------------|
+| - medicalHistory: String|             | - specialization: String|
+| - dateOfBirth: Date     |             | - licenseNumber: String |
+| - bloodType: String     |             | - experienceYears: Int  |
+| - allergies: String     |             | - consultationFee: Float|
+|                         |             | - bio: String           |
+|-------------------------|             |-------------------------|
+| + viewHistory()         |             | + manageSchedule()      |
+| + bookAppointment()     |             | + acceptAppointment()   |
+| + makePayment()         |             | + writePrescription()   |
++-------------------------+             +-------------------------+
+         |                                         |
+         | 1                                       | 1
+         |                                         |
+         | *                                       | *
+  +-------------------------+               +-------------------------+
+  |      Appointment        |               |       Prescription      |
+  |-------------------------|               |-------------------------|
+  | - appointmentId: String |               | - prescriptionId: String|
+  | - date: Date            |               | - patientId: String     |
+  | - timeSlot: String      |               | - doctorId: String      |
+  | - status: Enum(PENDING, |               | - dateIssued: Date      |
+  |   CONFIRMED, CANCELLED) |               | - medicines: List       |
+  | - patientId: String     |               | - instructions: String  |
+  | - doctorId: String      |               |-------------------------|
+  |-------------------------|               | + generatePDF()         |
+  | + confirm()             |               | + print()               |
+  | + cancel()              |               |                         |
+  | + reschedule()          |               +-------------------------+
+  +-------------------------+
+         |
+         | 1
+         |
+         | 1
+  +-------------------------+
+  |        Session          |
+  |-------------------------|
+  | - sessionId: String     |
+  | - appointmentId: String |
+  | - type: Enum(VIDEO,     |
+  |   AUDIO, CHAT)          |
+  | - duration: Int         |
+  | - notes: String         |
+  |-------------------------|
+  | + start()               |
+  | + end()                 |
+  | + record()              |
+  +-------------------------+
+
++-------------------------------------------------------------+
+|                          Message                            |
+|-------------------------------------------------------------|
+| - messageId: String                                         |
+| - senderId: String                                          |
+| - receiverId: String                                        |
+| - content: String                                           |
+| - timestamp: Date                                           |
+| - isRead: Boolean                                           |
+|-------------------------------------------------------------|
+| + send()                                                    |
+| + delete()                                                  |
+| + markAsRead()                                              |
++-------------------------------------------------------------+
+
++-------------------------------------------------------------+
+|                          Payment                            |
+|-------------------------------------------------------------|
+| - paymentId: String                                         |
+| - appointmentId: String                                     |
+| - patientId: String                                         |
+| - amount: Float                                             |
+| - currency: String                                          |
+| - method: Enum(CARD, PAYPAL)|                               |
+| - status: Enum(SUCCESS,   |                                 |
+|   FAILED, PENDING)        |                                 |
+| - timestamp: Date         |                                 |
+|-------------------------------------------------------------|
+| + processPayment()                                          |
+| + issueRefund()                                             |
+| + generateReceipt()                                         |
++-------------------------------------------------------------+
+
+Relationships:
+- A User can be a Patient, a Psychologist, or an Admin (Inheritance).
+- A Patient can book many Appointments (1 to *).
+- A Psychologist can have many Appointments (1 to *).
+- An Appointment leads to exactly one Session (1 to 1).
+- A Psychologist can write many Prescriptions for Patients (1 to *).
+- A Patient has many Prescriptions issued to them (1 to *).
+- A Patient makes a Payment for an Appointment (1 to 1).
+- Users (Patients and Psychologists) can send and receive many Messages (* to *).

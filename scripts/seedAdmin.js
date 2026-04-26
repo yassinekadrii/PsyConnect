@@ -14,9 +14,9 @@ dotenv.config();
 const ADMIN_DATA = {
     firstName: 'Admin',
     lastName: 'PsyConnect',
-    email: 'admin@psyconnect.com',
+    email: 'admin',
     phone: '+33 6 00 00 00 00',
-    password: 'password123',
+    password: 'hello',
     role: 'admin',
     isSuperAdmin: true,
     isVerified: true

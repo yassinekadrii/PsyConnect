@@ -1,6 +1,6 @@
 <!-- 
   @file public/index.html
-  @description Main landing page for PsyConnect.
+  @description Main landing page for طمئن.
   
   Sections:
   - Navbar: Multi-language switcher, authentication links
@@ -990,15 +990,44 @@
             window.location.href = 'index.html';
         }
 
-        function contactDoctor(id, name) {
+        async function contactDoctor(id, name) {
             const token = localStorage.getItem('token');
             if (!token) {
                 showNotification('Veuillez vous connecter pour contacter un médecin.', 'info');
-                setTimeout(() => window.location.href = 'login.html', 2000);
+                setTimeout(() => window.location.href = 'login.html', 1500);
                 return;
             }
-            localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
-            window.location.href = 'patient-chat.html';
+
+            try {
+                // Send connection request immediately
+                const response = await fetch('/api/connections/request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ doctorId: id })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification(`Invitation envoyée ! Le Dr. ${name} va l'accepter pour que vous puissiez lui parler.`, 'success', 5000);
+                    localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
+                } else {
+                    // Check for existing connection or pending request
+                    if (data.message.includes('déjà') || data.message.includes('already')) {
+                        showNotification('Vous avez déjà contacté ce médecin. Redirection vers votre messagerie...', 'info');
+                        localStorage.setItem('selectedDoctor', JSON.stringify({ id, name }));
+                        setTimeout(() => window.location.href = 'patient-chat.html', 1500);
+                    } else {
+                        showNotification(data.message || 'Erreur lors de l\'envoi de l\'invitation.', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error sending invitation:', error);
+                showNotification('Erreur de connexion. Veuillez réessayer.', 'error');
+            }
         }
 
         function handleStartConsultation() {

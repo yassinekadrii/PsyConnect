@@ -15,6 +15,12 @@ const Prescription = require('../models/Prescription');
 
 const fs = require('fs');
 
+// Helper for debugging
+const logToDebug = (message) => {
+    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ${message}\n`);
+    console.log(message);
+};
+
 // @desc    Create a new doctor account
 // @route   POST /api/admin/create-doctor
 // @access  Admin only
@@ -128,38 +134,43 @@ const createDoctor = async (req, res) => {
 // @route   GET /api/admin/dashboard
 // @access  Admin only
 const getDashboardStats = async (req, res) => {
-    fs.appendFileSync('api-debug.log', `[${new Date().toISOString()}] ENTERING getDashboardStats for user ${req.user.email}\n`);
+    logToDebug(`[${req.user.email}] ENTERING getDashboardStats`);
     try {
         console.log('Fetching dashboard stats...');
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         logToDebug(`[${req.user.email}] Fetching Patients...`);
-        const totalPatients = await User.countDocuments({ role: 'patient' });
+        const totalPatients = await User.countDocuments({ role: 'patient' }) || 0;
         
         logToDebug(`[${req.user.email}] Fetching Doctors...`);
-        const totalDoctors = await User.countDocuments({ role: 'doctor' });
+        const totalDoctors = await User.countDocuments({ role: 'doctor' }) || 0;
         
         logToDebug(`[${req.user.email}] Fetching All Users...`);
-        const totalUsers = await User.countDocuments();
+        const totalUsers = await User.countDocuments() || 0;
         
         logToDebug(`[${req.user.email}] Fetching Messages...`);
-        const totalMessages = await Message.countDocuments();
+        const totalMessages = await Message.countDocuments() || 0;
         
         logToDebug(`[${req.user.email}] Fetching Prescriptions...`);
-        const totalPrescriptions = await Prescription.countDocuments();
+        let totalPrescriptions = 0;
+        try {
+            totalPrescriptions = await Prescription.countDocuments() || 0;
+        } catch (perr) {
+            console.warn('Prescription model might not be ready or empty:', perr.message);
+        }
 
         logToDebug(`[${req.user.email}] Fetching Recent Patients...`);
         const recentPatients = await User.countDocuments({
             role: 'patient',
             createdAt: { $gte: thirtyDaysAgo }
-        });
+        }) || 0;
 
         logToDebug(`[${req.user.email}] Fetching Recent Doctors...`);
         const recentDoctors = await User.countDocuments({
             role: 'doctor',
             createdAt: { $gte: thirtyDaysAgo }
-        });
+        }) || 0;
 
         logToDebug(`[${req.user.email}] Dashboard stats gathered successfully`);
 
@@ -176,7 +187,8 @@ const getDashboardStats = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Dashboard stats error:', error);
+        console.error('Dashboard stats crash error:', error);
+        logToDebug(`[${req.user.email}] CRASH in getDashboardStats: ${error.message}`);
         res.status(500).json({
             success: false,
             message: 'Erreur lors de la récupération des statistiques.',

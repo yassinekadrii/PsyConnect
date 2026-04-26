@@ -1,0 +1,31 @@
+Doctor flow concise, easy to understand, and focused on the doctor's needs and goals.
+
+Sign In
+└── Doctor Dashboard (Home Screen)
+    ├── Appointments & Patients
+    │   ├── Patient List
+    │   ├── Patient Profile / Medical Records
+    │   └── Upcoming Appointments
+    │
+    ├── Consultation (Real-time)
+    │   ├── Patient Chat
+    │   ├── Start Video Call
+    │   ├── Start Audio Call
+    │   └── Screen Sharing
+    │
+    ├── Prescriptions
+    │   ├── Create New Prescription
+    │   │   ├── Add Medicines
+    │   │   ├── Add General Instructions
+    │   │   └── Save Prescription
+    │   ├── View Prescription History
+    │   └── Download Prescription (PDF)
+    │
+    ├── Messages
+    │   ├── Chat with Patients
+    │   └── Chat with Admin Team
+    │
+    └── Settings & Profile
+        ├── View/Edit Profile
+        ├── Update Availability
+        └── Logout

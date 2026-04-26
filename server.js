@@ -19,6 +19,7 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config();
 
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
@@ -59,6 +60,13 @@ app.use('/api/', limiter);
 
 // Sanitize NoSQL queries
 app.use(express.json({ limit: '10mb' })); // Increased limit for PDF uploads
+
+// Attach Socket.io to req
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
 app.use((req, res, next) => {
     req.body = mongoSanitize(req.body);
     req.query = mongoSanitize(req.query);
@@ -81,6 +89,12 @@ io.on('connection', (socket) => {
         });
     });
 
+    // Global user room for notifications (like calls)
+    socket.on('join-user-room', (userId) => {
+        console.log(`User ${userId} joined their personal room`);
+        socket.join(`user_${userId}`);
+    });
+
     // WebRTC Signaling
     socket.on('offer', (data) => {
         socket.to(data.roomId).emit('offer', data);
@@ -94,9 +108,18 @@ io.on('connection', (socket) => {
         socket.to(data.roomId).emit('ice-candidate', data);
     });
 
+    socket.on('hangup', (data) => {
+        socket.to(data.roomId).emit('hangup');
+    });
+
     // Call Signaling
     socket.on('start-call', (data) => {
-        console.log(`Call started in room ${data.roomId}`);
+        const receiverId = data.receiverId;
+        console.log(`Call started from ${socket.id} to user ${receiverId} in room ${data.roomId}`);
+        // Notify the specific target user globally if possible, OR the current room
+        if (receiverId) {
+            socket.to(`user_${receiverId}`).emit('call-started', data);
+        }
         socket.to(data.roomId).emit('call-started', data);
     });
 });
@@ -124,6 +147,9 @@ app.use('/api/user', require('./routes/user'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/prescriptions', require('./routes/prescriptions'));
 app.use('/api/posts', require('./routes/posts'));
+app.use('/api/moods', require('./routes/moods'));
+app.use('/api/connections', require('./routes/connections'));
+app.use('/api/assessments', require('./routes/assessments'));
 
 // Health check route
 app.get('/api/health', (req, res) => {

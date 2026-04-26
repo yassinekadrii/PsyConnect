@@ -5,6 +5,7 @@
 
 const Message = require('../models/Message');
 const User = require('../models/User');
+const Connection = require('../models/Connection');
 
 const analyzeSentiment = (text) => {
     const positiveWords = ['bien', 'heureux', 'merci', 'super', 'génial', 'happy', 'good', 'thanks', 'great', 'سعيد', 'شكرا', 'جميل', 'ممتاز', 'شكراً'];
@@ -34,6 +35,47 @@ exports.sendMessage = async (req, res) => {
         const receiver = await User.findById(receiverId);
         if (!receiver) {
             return res.status(404).json({ success: false, message: 'Utilisateur non trouvé' });
+        }
+
+        // Check Connection Permissions
+        const isPatientMessagingDoctor = req.user.role === 'patient' && receiver.role === 'doctor';
+        const isDoctorMessagingPatient = req.user.role === 'doctor' && receiver.role === 'patient';
+
+        if (isPatientMessagingDoctor || isDoctorMessagingPatient) {
+            const patientId = req.user.role === 'patient' ? req.user.id : receiverId;
+            const doctorId = req.user.role === 'doctor' ? req.user.id : receiverId;
+
+            console.log(`Checking connection: patient=${patientId}, doctor=${doctorId}`);
+            const connection = await Connection.findOne({ patient: patientId, doctor: doctorId });
+            console.log(`Connection found: ${connection ? connection.status : 'NONE'}`);
+
+            if (!connection && isPatientMessagingDoctor) {
+                return res.status(403).json({ 
+                    success: false, 
+                    message: 'Vous devez demander une connexion à ce médecin avant d\'envoyer un message.',
+                    needsConnection: true,
+                    debug: 'No connection found in database'
+                });
+            }
+
+            if (connection) {
+                if (connection.status === 'pending' && isPatientMessagingDoctor) {
+                    return res.status(403).json({ 
+                        success: false, 
+                        message: 'Votre demande de connexion est en attente d\'acceptation.',
+                        status: 'pending',
+                        debug: 'Connection status is pending'
+                    });
+                }
+                if (connection.status === 'blocked') {
+                    return res.status(403).json({ 
+                        success: false, 
+                        message: 'La communication avec cet utilisateur est bloquée.',
+                        status: 'blocked',
+                        debug: 'Connection status is blocked'
+                    });
+                }
+            }
         }
 
         const { sentiment, score } = analyzeSentiment(content);
@@ -68,7 +110,11 @@ exports.sendMessage = async (req, res) => {
         });
     } catch (error) {
         console.error('Error sending message:', error);
-        res.status(500).json({ success: false, message: 'Erreur lors de l\'envoi du message' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Erreur lors de l\'envoi du message',
+            debug: error.message 
+        });
     }
 };
 
@@ -112,12 +158,21 @@ exports.getConversations = async (req, res) => {
         const seenUsers = new Set();
 
         messages.forEach(msg => {
-            const otherUser = msg.sender._id.toString() === currentUserId.toString()
-                ? msg.receiver
-                : msg.sender;
+            // Skip messages where sender or receiver might be null (deleted user)
+            if (!msg.sender || !msg.receiver) return;
 
-            if (!seenUsers.has(otherUser._id.toString())) {
-                seenUsers.add(otherUser._id.toString());
+            // Safely get IDs whether populated or not
+            const senderId = (msg.sender._id || msg.sender).toString();
+            const receiverId = (msg.receiver._id || msg.receiver).toString();
+            const currentId = currentUserId.toString();
+
+            const otherUser = senderId === currentId ? msg.receiver : msg.sender;
+
+            if (!otherUser) return;
+            const otherUserId = (otherUser._id || otherUser).toString();
+
+            if (!seenUsers.has(otherUserId)) {
+                seenUsers.add(otherUserId);
                 conversations.push({
                     user: otherUser,
                     lastMessage: msg.content,

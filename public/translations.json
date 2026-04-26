@@ -60,7 +60,13 @@
                 "patients": "Patients",
                 "admins": "Admins",
                 "create_doctor": "Add Doctor",
-                "create_admin": "Add Admin"
+                "create_admin": "Add Admin",
+                "statistics": "Statistics"
+            },
+            "dashboard": {
+                "title": "Dashboard",
+                "welcome": "Welcome,",
+                "status_live": "Platform Live"
             },
             "stats": {
                 "title": "Platform Overview",
@@ -73,6 +79,9 @@
                 "new_patients": "New Patients",
                 "new_doctors": "New Doctors",
                 "export_pdf": "Export PDF"
+            },
+            "doctors": {
+                "list_title": "Doctors List"
             },
             "tables": {
                 "name": "Name",
@@ -108,6 +117,17 @@
                 "share_screen": "Share Screen",
                 "stop_sharing": "Stop Sharing",
                 "view_prescriptions": "View Prescriptions",
+                "accept": "Accept",
+                "block": "Block",
+                "request_access": "Request Access",
+                "pending_approval": "Waiting for Approval",
+                "blocked_by_doctor": "Communication Blocked",
+                "no_connection": "Request a connection to start chatting",
+                "invitations": "Patient Invitations",
+                "invitations_desc": "Pending contact requests",
+                "no_invitations": "No pending invitations",
+                "invitation_accepted": "Patient accepted!",
+                "invitation_blocked": "Patient blocked.",
                 "add_prescription": "Add Prescription",
                 "select_doctor": "Select a doctor",
                 "select_patient": "Select a patient",
@@ -164,6 +184,28 @@
             "no_doc": "No document uploaded",
             "upload_btn": "Update Profile"
         },
+        "schedule": {
+            "title": "Manage My Schedule",
+            "subtitle": "Define your available consultation hours",
+            "days": {
+                "lundi": "Monday",
+                "mardi": "Tuesday",
+                "mercredi": "Wednesday",
+                "jeudi": "Thursday",
+                "vendredi": "Friday",
+                "samedi": "Saturday",
+                "dimanche": "Sunday"
+            },
+            "start_time": "Start Time",
+            "end_time": "End Time",
+            "is_available": "Available",
+            "add_slot": "+ Add Slot",
+            "no_slots": "No slots added",
+            "save": "Save Schedule",
+            "success": "Schedule saved successfully",
+            "error": "Error saving schedule",
+            "back": "Back"
+        },
         "common": {
             "cancel": "Cancel",
             "close": "Close",
@@ -196,6 +238,39 @@
             "made_with": "Made with ❤️ by Yassine Kadri.",
             "company": "Company",
             "support": "Support"
+        },
+        "booking": {
+            "book_btn": "Book Appointment",
+            "modal_title": "Book a Consultation with Dr.",
+            "select_date": "Select a Date",
+            "select_time": "Select a Time",
+            "no_slots_day": "No slots available on this day",
+            "confirm_btn": "Confirm Booking",
+            "cancel_btn": "Cancel",
+            "success": "Appointment booked successfully!",
+            "error": "Error booking appointment"
+        },
+        "mood": {
+            "title": "How are you today?",
+            "subtitle": "Track your well-being journey",
+            "log_success": "Mood logged successfully!",
+            "chart_title": "Your Well-being Curve",
+            "history": "Recent Moods",
+            "levels": {
+                "super": "Great",
+                "good": "Good",
+                "neutral": "Neutral",
+                "sad": "Sad",
+                "very_sad": "Terrible"
+            }
+        },
+        "dashboard": {
+            "welcome": "Welcome,",
+            "next_appointment": "Next Appointment",
+            "latests_prescriptions": "Latest Prescriptions",
+            "find_doctor": "Find a Specialist",
+            "no_upcoming": "No upcoming appointments",
+            "view_all": "View all"
         }
     },
     "fr": {
@@ -258,7 +333,13 @@
                 "patients": "Patients",
                 "admins": "Administrateurs",
                 "create_doctor": "Ajouter un Médecin",
-                "create_admin": "Ajouter un Admin"
+                "create_admin": "Ajouter un Admin",
+                "statistics": "Statistiques"
+            },
+            "dashboard": {
+                "title": "Tableau de bord",
+                "welcome": "Bienvenue,",
+                "status_live": "Plateforme en ligne"
             },
             "stats": {
                 "title": "Vue d'ensemble",
@@ -271,6 +352,9 @@
                 "new_patients": "Nouveaux Patients",
                 "new_doctors": "Nouveaux Médecins",
                 "export_pdf": "Exporter PDF"
+            },
+            "doctors": {
+                "list_title": "Liste des médecins"
             },
             "tables": {
                 "name": "Nom",
@@ -305,7 +389,18 @@
                 "join_video": "Rejoindre",
                 "share_screen": "Partager l'écran",
                 "stop_sharing": "Arrêter le partage",
-                "view_prescriptions": "Voir Ordonnances",
+                "view_prescriptions": "Voir les ordonnances",
+                "accept": "Accepter",
+                "block": "Bloquer",
+                "request_access": "Demander l'accès",
+                "pending_approval": "En attente d'approbation",
+                "blocked_by_doctor": "Communication bloquée",
+                "no_connection": "Demandez une connexion pour commencer à discuter",
+                "invitations": "Invitations de patients",
+                "invitations_desc": "Demandes de contact en attente",
+                "no_invitations": "Aucune invitation en attente",
+                "invitation_accepted": "Patient accepté !",
+                "invitation_blocked": "Patient bloqué.",
                 "add_prescription": "Ajouter Ordonnance",
                 "select_doctor": "Sélectionnez un médecin",
                 "select_patient": "Sélectionnez un patient",
@@ -362,6 +457,28 @@
             "no_doc": "Aucun document téléchargé",
             "upload_btn": "Mettre à jour le profil"
         },
+        "schedule": {
+            "title": "Gérer mes disponibilités",
+            "subtitle": "Définissez vos heures de consultation",
+            "days": {
+                "lundi": "Lundi",
+                "mardi": "Mardi",
+                "mercredi": "Mercredi",
+                "jeudi": "Jeudi",
+                "vendredi": "Vendredi",
+                "samedi": "Samedi",
+                "dimanche": "Dimanche"
+            },
+            "start_time": "Heure de début",
+            "end_time": "Heure de fin",
+            "is_available": "Disponible",
+            "add_slot": "+ Ajouter",
+            "no_slots": "Aucun créneau",
+            "save": "Enregistrer",
+            "success": "Horaires enregistrés avec succès",
+            "error": "Erreur lors de l'enregistrement",
+            "back": "Retour"
+        },
         "common": {
             "cancel": "Annuler",
             "close": "Fermer",
@@ -394,6 +511,39 @@
             "made_with": "Fabriqué avec ❤️ par Yassine Kadri.",
             "company": "Entreprise",
             "support": "Support"
+        },
+        "booking": {
+            "book_btn": "Prendre Rendez-vous",
+            "modal_title": "Prendre Rendez-vous avec Dr.",
+            "select_date": "Sélectionner une Date",
+            "select_time": "Sélectionner une Heure",
+            "no_slots_day": "Aucun créneau disponible ce jour",
+            "confirm_btn": "Confirmer",
+            "cancel_btn": "Annuler",
+            "success": "Rendez-vous réservé avec succès !",
+            "error": "Erreur lors de la réservation"
+        },
+        "mood": {
+            "title": "Comment allez-vous aujourd'hui ?",
+            "subtitle": "Suivez votre parcours de bien-être",
+            "log_success": "Humeur enregistrée !",
+            "chart_title": "Votre courbe de bien-être",
+            "history": "Humeurs récentes",
+            "levels": {
+                "super": "Super",
+                "good": "Bien",
+                "neutral": "Neutre",
+                "sad": "Triste",
+                "very_sad": "Très triste"
+            }
+        },
+        "dashboard": {
+            "welcome": "Bienvenue,",
+            "next_appointment": "Prochain Rendez-vous",
+            "latests_prescriptions": "Dernières Ordonnances",
+            "find_doctor": "Trouver un Spécialiste",
+            "no_upcoming": "Aucun rendez-vous à venir",
+            "view_all": "Voir tout"
         }
     },
     "ar": {
@@ -456,7 +606,13 @@
                 "patients": "المرضى",
                 "admins": "المدراء",
                 "create_doctor": "إضافة طبيب",
-                "create_admin": "إضافة مدير"
+                "create_admin": "إضافة مدير",
+                "statistics": "الإحصائيات"
+            },
+            "dashboard": {
+                "title": "لوحة التحكم",
+                "welcome": "مرحباً بك،",
+                "status_live": "في الخدمة حاليا"
             },
             "stats": {
                 "title": "نظرة عامة",
@@ -469,6 +625,9 @@
                 "new_patients": "مرضى جدد",
                 "new_doctors": "أطباء جدد",
                 "export_pdf": "تصدير PDF"
+            },
+            "doctors": {
+                "list_title": "قائمة الأطباء"
             },
             "tables": {
                 "name": "الاسم",
@@ -504,6 +663,17 @@
                 "share_screen": "مشاركة الشاشة",
                 "stop_sharing": "إيقاف المشاركة",
                 "view_prescriptions": "عرض الوصفات",
+                "accept": "قبول",
+                "block": "حظر",
+                "request_access": "طلب الوصول",
+                "pending_approval": "في انتظار الموافقة",
+                "blocked_by_doctor": "الاتصال محظور",
+                "no_connection": "اطلب الاتصال لبدء الدردشة",
+                "invitations": "دعوات المرضى",
+                "invitations_desc": "طلبات الاتصال المعلقة",
+                "no_invitations": "لا توجد دعوات معلقة",
+                "invitation_accepted": "تم قبول المريض!",
+                "invitation_blocked": "تم حظر المريض.",
                 "add_prescription": "إضافة وصفة",
                 "select_doctor": "اختر طبيباً",
                 "select_patient": "اختر مريضاً",
@@ -560,6 +730,28 @@
             "no_doc": "لم يتم تحميل أي مستند",
             "upload_btn": "تحديث الملف الشخصي"
         },
+        "schedule": {
+            "title": "إدارة أوقات فراغي",
+            "subtitle": "حدد ساعات الاستشارة المتاحة لك",
+            "days": {
+                "lundi": "الإثنين",
+                "mardi": "الثلاثاء",
+                "mercredi": "الأربعاء",
+                "jeudi": "الخميس",
+                "vendredi": "الجمعة",
+                "samedi": "السبت",
+                "dimanche": "الأحد"
+            },
+            "start_time": "وقت البدء",
+            "end_time": "وقت الانتهاء",
+            "is_available": "متاح",
+            "add_slot": "+ إضافة وقت",
+            "no_slots": "لم تتم إضافة أي أوقات",
+            "save": "حفظ الجدول",
+            "success": "تم حفظ الجدول بنجاح",
+            "error": "حدث خطأ أثناء حفظ الجدول",
+            "back": "رجوع"
+        },
         "common": {
             "cancel": "إلغاء",
             "close": "إغلاق",
@@ -592,6 +784,39 @@
             "made_with": "صنع بـ ❤️ بواسطة ياسين قدري.",
             "company": "الشركة",
             "support": "الدعم"
+        },
+        "booking": {
+            "book_btn": "حجز موعد",
+            "modal_title": "حجز استشارة مع د.",
+            "select_date": "اختر تاريخاً",
+            "select_time": "اختر وقتاً",
+            "no_slots_day": "لا توجد أوقات متاحة في هذا اليوم",
+            "confirm_btn": "تأكيد الحجز",
+            "cancel_btn": "إلغاء",
+            "success": "تم حجز الموعد بنجاح!",
+            "error": "حدث خطأ أثناء حجز الموعد"
+        },
+        "mood": {
+            "title": "كيف حالك اليوم؟",
+            "subtitle": "تتبع مسار عافيتك",
+            "log_success": "تم تسجيل حالتك المزاجية بنجاح!",
+            "chart_title": "منحنى الرفاهية الخاص بك",
+            "history": "الحالات المزاجية الأخيرة",
+            "levels": {
+                "super": "ممتاز",
+                "good": "جيد",
+                "neutral": "عادي",
+                "sad": "حزين",
+                "very_sad": "سيء جداً"
+            }
+        },
+        "dashboard": {
+            "welcome": "مرحباً بك،",
+            "next_appointment": "الموعد القادم",
+            "latests_prescriptions": "أحدث الوصفات",
+            "find_doctor": "ابحث عن أخصائي",
+            "no_upcoming": "لا توجد مواعيد قادمة",
+            "view_all": "عرض الكل"
         }
     }
 }

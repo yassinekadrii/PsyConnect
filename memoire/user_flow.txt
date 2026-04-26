@@ -1,0 +1,60 @@
+User flow concise, easy to understand, and focused on the user's needs and goals.
+
+Install - Medipill
+└── SplashScreen
+    └── Onboarding Screen
+        └── Sign In/ Sign Up
+            └── Home Screen
+                ├── Home
+                │   ├── Location
+                │   ├── Search/ Filters
+                │   ├── Doctors
+                │   ├── Diagnostics
+                │   ├── Symptoms
+                │   ├── Pharmacy
+                │   │   ├── Cart
+                │   │   ├── Search
+                │   │   ├── Category
+                │   │   ├── Wellness Product
+                │   │   ├── Store List
+                │   │   └── Neurology
+                │   ├── Popular Doctors
+                │   ├── Nearby Pharmacy
+                │   ├── Doctors Category
+                │   ├── Health Issue
+                │   ├── Neurology
+                │   ├── Filters
+                │   ├── Doctor List
+                │   ├── Doctor Profile
+                │   ├── Video Visit ─── Office Visit
+                │   │   └── Confirm Appointment
+                │   └── (Confirm Appointment can also follow Office Visit)
+                │
+                ├── Search
+                │   ├── Search & Filters
+                │   └── Results
+                │
+                ├── Get Care
+                │   ├── Office Visit
+                │   └── Virtual Visit
+                │       └── Get on Demand Care
+                │
+                ├── Message
+                │   ├── New Message
+                │   ├── Chat with doctors
+                │   ├── Admin Team
+                │   ├── Medical team
+                │   └── Tech Support
+                │
+                └── More
+                    ├── Navigation Menu
+                    ├── Settings
+                    ├── Personal Info
+                    ├── Manage Family Acc.
+                    ├── Insurance & Billing
+                    ├── Prescriptons & Order
+                    ├── Your Preferred Store
+                    ├── Appointments
+                    ├── My Health Records
+                    ├── About Medipill
+                    └── Logout

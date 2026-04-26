@@ -11,12 +11,15 @@ const User = require('../models/User');
 // @access  Doctor only
 exports.createPrescription = async (req, res) => {
     try {
-        const { patientId, medicines, instructions, pdf } = req.body;
+        const { patientId, medicines, exercises, instructions, pdf } = req.body;
 
-        if (!patientId || ((!medicines || medicines.length === 0) && !pdf)) {
+        const hasMedicines = medicines && medicines.length > 0;
+        const hasExercises = exercises && exercises.length > 0;
+
+        if (!patientId || (!hasMedicines && !hasExercises && !pdf)) {
             return res.status(400).json({
                 success: false,
-                message: 'Veuillez fournir un patient et soit des médicaments, soit un fichier PDF.'
+                message: 'Veuillez fournir un patient et au moins un médicament, un exercice ou un fichier PDF.'
             });
         }
 
@@ -33,6 +36,7 @@ exports.createPrescription = async (req, res) => {
             doctor: req.user.id,
             patient: patientId,
             medicines: medicines || [],
+            exercises: exercises || [],
             instructions,
             pdf: pdf || ''
         });

@@ -19,7 +19,7 @@ This document provides a comprehensive technical breakdown of the PsyConnect pla
 | `doctor-chat.html` | **Doctor Interface** | Real-time chat, Video call, and Prescription management. |
 | `patient-chat.html` | **Patient Interface** | Real-time chat, Video call, and Viewing prescriptions. |
 | `profile.html` | **Settings** | Personal info management and Secure password change. |
-| `patient-dashboard.html` | **Patient Hub** | (Internal) Quick overview for patient activity. |
+activity. |
 | `translations.json` | **i18n Asset** | The complete dictionary for EN, FR, and AR. |
 
 ---

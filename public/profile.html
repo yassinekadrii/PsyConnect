@@ -464,9 +464,17 @@
         }
 
         function goBack() {
+            const referrer = document.referrer;
+            // If we have a referrer from our own site and it's not the login page, go there
+            if (referrer && referrer.includes(window.location.hostname) && !referrer.includes('login.html')) {
+                window.location.href = referrer;
+                return;
+            }
+
+            // Fallback based on role
             if (user.role === 'admin') window.location.href = 'admin-dashboard.html';
-            else if (user.role === 'doctor') window.location.href = 'doctor-chat.html'; // Or dashboard if exists
-            else window.location.href = 'patient-dashboard.html';
+            else if (user.role === 'doctor') window.location.href = 'doctor-chat.html';
+            else window.location.href = 'index.html';
         }
 
         async function handleUpdate(e) {
@@ -528,7 +536,8 @@
                     document.getElementById('currentPassword').value = '';
                     document.getElementById('newPassword').value = '';
                 } else {
-                    showNotification(data.message || getNestedTranslation(currentLang, 'profile.error'), 'error');
+                    const errMsg = data.debug ? `${data.message} (${data.debug})` : (data.message || getNestedTranslation(currentLang, 'profile.error'));
+                    showNotification(errMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);

@@ -90,7 +90,11 @@ router.put('/profile', auth, async (req, res) => {
         });
     } catch (error) {
         console.error('Error updating profile:', error);
-        res.status(500).json({ success: false, message: 'Erreur lors de la mise à jour du profil' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Erreur lors de la mise à jour du profil',
+            debug: error.message 
+        });
     }
 });
 

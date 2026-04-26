@@ -1,0 +1,81 @@
+المطلب الثالث: مخططات التسلسل (Sequence Diagrams)
+توضح هذه المخططات تدفق التفاعل بين الكائنات عبر الزمن لسيناريوهات محددة.
+
+==================================================
+شكل (1.3): مخطط التسلسل - حجز موعد
+==================================================
+هنا يوضح خطوات حجز موعد: 
+Patient -> System -> Database -> Psychologist -> Confirmation
+
+```mermaid
+sequenceDiagram
+    participant Patient as المريض
+    participant System as النظام
+    participant Database as قاعدة البيانات
+    participant Psychologist as الأخصائي
+
+    Patient->>System: 1. يختار أخصائياً من القائمة
+    System->>Database: 2. يطلب النظام الأوقات المتاحة
+    Database-->>System: 3. إرجاع بيانات الأوقات المتاحة
+    System-->>Patient: 4. تعرض الأوقات للمريض
+    Patient->>System: 5. يختار المريض وقتاً للموعد
+    System->>Database: 6. يتحقق النظام من توفر الوقت (قفل مؤقت)
+    Database-->>System: 7. الوقت متوفر
+    System->>Database: 8. ينشئ النظام سجل موعد جديد بحالة "معلق"
+    System-->>Patient: 9. يطلب النظام تأكيد الدفع
+    Patient->>System: 10. يقوم المريض بالدفع
+    System->>Database: 11. تحديث حالة الموعد إلى "مؤكد" بعد الدفع
+    System-->>Patient: 12. إرسال إشعار تأكيد للمريض
+    System-->>Psychologist: 13. إرسال إشعار حجز موعد جديد للأخصائي
+```
+
+==================================================
+شكل (1.4): مخطط التسلسل - استشارة فيديو
+==================================================
+هنا يوضح خطوات بدء مكالمة فيديو بين المريض والأخصائي:
+
+```mermaid
+sequenceDiagram
+    participant Patient as المريض
+    participant System as النظام
+    participant Agora as Agora API (أو WebRTC Server)
+    participant Psychologist as الأخصائي
+
+    Note over Patient,System: في وقت الموعد
+    Patient->>System: 1. يفتح المريض صفحة الجلسة
+    Patient->>System: 2. يضغط على زر "بدء الجلسة"
+    System->>Agora: 3. يرسل النظام طلباً لإنشاء غرفة / الاتصال
+    Agora-->>System: 4. تستجيب برابط الغرفة ورمزها
+    System->>Psychologist: 5. يرسل النظام رابط/إشعار الغرفة للأخصائي
+    Psychologist->>Agora: 6. ينضم الأخصائي إلى الغرفة عبر الرابط
+    Note over Patient,Psychologist: 7. تبدأ جلسة الفيديو (الاستشارة نظير إلى نظير)
+    Patient->>Agora: 8. عند الانتهاء، المريض ينهي الجلسة
+    Agora-->>System: 9. إشعار بإغلاق الغرفة
+    System->>System: 10. يحدث النظام حالة الجلسة المزامنة إلى "منتهية"
+```
+
+==================================================
+شكل (1.5): مخطط التسلسل - إرسال وصفة طبية
+==================================================
+هنا يوضح خطوات كتابة وإرسال وصفة من قِبل الأخصائي:
+
+```mermaid
+sequenceDiagram
+    participant Psychologist as الأخصائي
+    participant System as النظام
+    participant Database as قاعدة البيانات
+    participant Patient as المريض
+
+    Note over Psychologist,System: بعد انتهاء الجلسة
+    Psychologist->>System: 1. يفتح الأخصائي نموذج الوصفة الطبية
+    Psychologist->>System: 2. يدخل التشخيص والدواء والجرعة والتعليمات
+    Psychologist->>System: 3. يضغط على زر "إرسال"
+    System->>System: 4. يتحقق النظام من صحة البيانات المدخلة
+    System->>Database: 5. يحفظ النظام الوصفة في قاعدة البيانات (ربط بـ patient_id)
+    Database-->>System: 6. تأكيد حفظ البيانات بنجاح
+    System->>Patient: 7. يرسل النظام إشعاراً (بريد إلكتروني + إشعار داخل التطبيق)
+    Patient->>System: 8. يفتح المريض لوحة التحكم
+    System-->>Patient: 9. تظهر الوصفة للمريض في لوحة التحكم
+    Patient->>System: 10. يطلب المريض طباعة الوصفة أو حفظها (PDF)
+    System-->>Patient: 11. توليد الوصفة وتنزيلها
+```

@@ -1,0 +1,37 @@
+Admin flow concise, easy to understand, and focused on the administrator's needs and goals.
+
+Sign In (Admin Credentials)
+└── Admin Dashboard (Home Screen)
+    ├── Platform Overview & Statistics
+    │   ├── Total Users (Doctors & Patients)
+    │   ├── Total Messages/Consultations
+    │   └── Total Prescriptions Issued
+    │
+    ├── User Management
+    │   ├── Manage Doctors
+    │   │   ├── Add New Doctor Profile
+    │   │   ├── Edit Doctor Profile
+    │   │   └── Deactivate/Remove Doctor
+    │   │
+    │   ├── Manage Patients
+    │   │   ├── View Patient Directory
+    │   │   ├── Block/Suspend Patients
+    │   │   └── View Patient Activity
+    │   │
+    │   └── Manage Admins
+    │       ├── Add New Admin
+    │       └── Manage Permissions
+    │
+    ├── Content & Platform Activity
+    │   ├── Monitor Recent Prescriptions
+    │   ├── View Platform Reports (PDF Generation)
+    │   └── Export Analytics Data
+    │
+    ├── Settings & Configuration
+    │   ├── Global Platform Settings
+    │   ├── Manage Roles (Role-based Access)
+    │   └── View Audit Logs (Logs/Api Debugs)
+    │
+    └── Profile
+        ├── Update Admin Profile
+        └── Logout

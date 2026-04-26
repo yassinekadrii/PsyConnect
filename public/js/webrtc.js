@@ -2,6 +2,8 @@ let localStream;
 let remoteStream;
 let screenStream;
 let peerConnection;
+let currentRoomId = null;
+
 /**
  * @file public/js/webrtc.js
  * @description WebRTC implementation for video calls and real-time signaling via Socket.io.
@@ -12,13 +14,39 @@ const socket = io(); // Connect to the server
 const rtcConfig = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-    ]
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' }
+    ],
+    iceCandidatePoolSize: 10
 };
 
 // Initialize call session
 async function startCallSession(roomId, currentUserId, options = { video: true, audio: true }) {
+    console.log('--- WEBRTC START SESSION ---');
+    currentRoomId = roomId;
+    console.log('Room ID:', roomId);
+    console.log('User ID:', currentUserId);
+    console.log('Options:', JSON.stringify(options));
+    console.log('Socket Connected:', socket.connected);
+
     try {
+        if (!socket || !socket.connected) {
+            console.warn('Socket not connected at call start. Attempting to proceed...');
+        }
+
+        // Check for Secure Context
+        if (!window.isSecureContext && window.location.hostname !== 'localhost') {
+            const warning = '⚠️ L\'accès à la caméra/micro nécessite une connexion sécurisée (HTTPS). Les appels risquent de ne pas fonctionner.';
+            console.error(warning);
+            if (window.showNotification) showNotification(warning, 'error');
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Média non supporté ou non autorisé (Vérifiez HTTPS)');
+        }
+
         // Show video modal
         const modal = document.getElementById('videoModal');
         if (modal) modal.style.display = 'flex';
@@ -42,41 +70,52 @@ async function startCallSession(roomId, currentUserId, options = { video: true, 
         setupSocketListeners(roomId);
 
         // Join room immediately so we are ready for offers
-        console.log(`Joining room: ${roomId} as user: ${currentUserId}`);
+        console.log(`Joining Room: ${roomId}`);
         socket.emit('join-room', roomId, currentUserId);
 
         // Get local stream
         localStream = await navigator.mediaDevices.getUserMedia(options);
-        if (localVideo && options.video) localVideo.srcObject = localStream;
+        console.log('✅ Local Media Stream Acquired');
+        
+        if (localVideo && options.video) {
+            localVideo.srcObject = localStream;
+            localVideo.play().catch(e => console.warn('Autoplay prevented on local video', e));
+        }
 
     } catch (error) {
-        console.error('Error starting call:', error);
+        console.error('❌ WebRTC Session Error:', error);
         const msg = error.name === 'NotAllowedError' ?
             'Accès média refusé. Veuillez autoriser l\'accès.' :
-            'Impossible d\'accéder à la caméra ou au microphone.';
+            `Erreur d'appel: ${error.message || 'Problème de connexion'}`;
 
         if (window.showNotification) {
             showNotification(msg, 'error');
         } else {
             alert(msg);
         }
-        endCallSession();
+        endCallSession(false);
     }
 }
 
+// Queue for candidates received before peerConnection is ready
+let iceCandidateQueue = [];
+
 function setupSocketListeners(roomId) {
+    console.log('--- SETTING UP SIGNALING LISTENERS ---');
     socket.off('user-connected');
     socket.off('offer');
     socket.off('answer');
     socket.off('ice-candidate');
     socket.off('user-disconnected');
+    socket.off('hangup');
 
     socket.on('user-connected', async (userId) => {
-        console.log('User connected:', userId);
+        console.log('👤 Peer Joined:', userId);
 
         // Wait for local stream if not ready
         let attempts = 0;
         while (!localStream && attempts < 10) {
+            console.log('...Waiting for local stream...');
             await new Promise(r => setTimeout(r, 500));
             attempts++;
         }
@@ -89,6 +128,7 @@ function setupSocketListeners(roomId) {
         createPeerConnection(roomId);
 
         try {
+            console.log('➡️ Creating Offer');
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
             socket.emit('offer', { type: 'offer', sdp: offer, roomId });
@@ -98,7 +138,7 @@ function setupSocketListeners(roomId) {
     });
 
     socket.on('offer', async (data) => {
-        console.log('Received offer');
+        console.log('⬅️ Received Offer');
 
         // Wait for local stream if not ready
         let attempts = 0;
@@ -108,8 +148,7 @@ function setupSocketListeners(roomId) {
         }
 
         if (!localStream) {
-            console.warn('Received offer but local stream not ready. Joining room might be needed?');
-            // If they received an offer, they must have clicked the button or have a listener.
+            console.warn('Received offer but local stream not ready.');
             return;
         }
 
@@ -120,40 +159,53 @@ function setupSocketListeners(roomId) {
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
             socket.emit('answer', { type: 'answer', sdp: answer, roomId: data.roomId });
+            console.log('➡️ Sent Answer');
+
+            // Process queued candidates
+            processIceQueue();
         } catch (error) {
             console.error('Error handling offer:', error);
         }
     });
 
     socket.on('answer', async (data) => {
-        console.log('Received answer');
+        console.log('⬅️ Received Answer');
         try {
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                processIceQueue();
             }
         } catch (error) {
             console.error('Error handling answer:', error);
         }
     });
-    // ... rest of the handlers ...
 
     socket.on('ice-candidate', async (data) => {
-        try {
-            if (peerConnection) {
+        console.log('⬅️ Received ICE Candidate');
+        if (peerConnection && peerConnection.remoteDescription) {
+            try {
                 await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            } catch (error) {
+                console.error('Error adding ICE candidate:', error);
             }
-        } catch (error) {
-            console.error('Error adding ICE candidate:', error);
+        } else {
+            console.log('...Queuing ICE Candidate (PC/Remote not ready)...');
+            iceCandidateQueue.push(data.candidate);
         }
     });
 
     socket.on('user-disconnected', (userId) => {
-        console.log('User disconnected:', userId);
+        console.log('👤 Peer Disconnected:', userId);
         if (document.getElementById('remoteVideo')) {
             document.getElementById('remoteVideo').srcObject = null;
         }
-        // Optional: End call if peer disconnects?
-        // endCallSession();
+        // If peer disconnected (socket lost), end the visual session
+        endCallSession(false);
+    });
+
+    socket.on('hangup', () => {
+        console.log('⬅️ Received Hangup Signal');
+        endCallSession(false);
     });
 }
 
@@ -179,7 +231,13 @@ function createPeerConnection(roomId) {
     });
 }
 
-function endCallSession() {
+function endCallSession(manual = true) {
+    console.log('--- ENDING CALL SESSION ---');
+    if (manual && currentRoomId) {
+        console.log('➡️ Sending Hangup Signal for Room:', currentRoomId);
+        socket.emit('hangup', { roomId: currentRoomId });
+    }
+
     if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
@@ -193,12 +251,12 @@ function endCallSession() {
     const modal = document.getElementById('videoModal');
     if (modal) modal.style.display = 'none';
 
-    // Reload page or reset specific UI elements if needed
-    // window.location.reload(); 
     if (screenStream) {
         screenStream.getTracks().forEach(track => track.stop());
         screenStream = null;
     }
+
+    currentRoomId = null;
 }
 
 async function toggleScreenShare() {
@@ -250,4 +308,17 @@ function replaceVideoTrack(newTrack) {
         const tracks = [newTrack, ...localStream.getAudioTracks()];
         localVideo.srcObject = new MediaStream(tracks);
     }
+}
+
+function processIceQueue() {
+    if (!peerConnection || !peerConnection.remoteDescription) return;
+    console.log(`Processing ${iceCandidateQueue.length} queued candidates`);
+    iceCandidateQueue.forEach(async (candidate) => {
+        try {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+            console.error('Error processing queued candidate', e);
+        }
+    });
+    iceCandidateQueue = [];
 }

@@ -38,6 +38,24 @@ const PrescriptionSchema = new mongoose.Schema({
             default: ''
         }
     }],
+    exercises: [{
+        title: {
+            type: String,
+            required: true
+        },
+        description: {
+            type: String,
+            default: ''
+        },
+        frequency: {
+            type: String,
+            default: ''
+        },
+        duration: {
+            type: String,
+            default: ''
+        }
+    }],
     instructions: {
         type: String,
         default: ''

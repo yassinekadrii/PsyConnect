@@ -1,0 +1,63 @@
+المطلب الرابع: مخططات النشاط (Activity Diagrams)
+تمثل مخططات النشاط تدفق العمل في النظام.
+
+==================================================
+شكل (1.6): مخطط النشاط - تسجيل مستخدم جديد
+==================================================
+هنا يوضح مخطط النشاط خطوات تسجيل مستخدم جديد في المنصة:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Start: بداية
+    Start --> InputData: إدخال البيانات الشخصية (الاسم، البريد، كلمة المرور)
+    InputData --> ValidateEmailFormat: التحقق من صحة البريد (صيغة)
+    ValidateEmailFormat --> CheckEmailExists: هل البريد موجود مسبقاً؟
+    
+    state check_email_exists <<choice>>
+    CheckEmailExists --> check_email_exists
+    
+    check_email_exists --> ShowErrorExists: نعم (البريد موجود بالفعل)
+    ShowErrorExists --> InputData: إعادة إدخال البريد
+    
+    check_email_exists --> SendOTP: لا (إرسال رمز التحقق إلى البريد)
+    SendOTP --> InputOTP: إدخال رمز التحقق
+    InputOTP --> VerifyOTP: هل الرمز صحيح؟
+    
+    state verify_otp <<choice>>
+    VerifyOTP --> verify_otp
+    
+    verify_otp --> ShowErrorOTP: لا (عرض خطأ وإعادة الإدخال)
+    ShowErrorOTP --> InputOTP
+    
+    verify_otp --> ActivateAccount: نعم (تفعيل الحساب)
+    ActivateAccount --> RedirectHome: إعادة التوجيه إلى الصفحة الرئيسية
+    RedirectHome --> [*]: نهاية
+```
+
+==================================================
+شكل (1.7): مخطط النشاط - سير الجلسة الاستشارية
+==================================================
+هنا يوضح الدورة الكاملة لرحلة المريض في الجلسة الاستشارية:
+
+```mermaid
+stateDiagram-v2
+    [*] --> SearchDoctor: بحث عن أخصائي
+    SearchDoctor --> SelectDoctor: اختيار أخصائي
+    SelectDoctor --> BookAppointment: حجز موعد
+    BookAppointment --> Payment: دفع (إن لم يكن مدفوعاً مسبقاً)
+    Payment --> WaitAppointment: انتظار وقت الموعد
+    WaitAppointment --> Reminder: تذكير قبل الموعد
+    Reminder --> EnterRoom: الدخول إلى غرفة الجلسة
+    EnterRoom --> ConductSession: إجراء الاستشارة (نص/صوت/فيديو)
+    ConductSession --> EndSession: إنهاء الجلسة
+    
+    state session_end_actions <<choice>>
+    EndSession --> session_end_actions
+    
+    session_end_actions --> WritePrescription: (اختياري) كتابة وصفة طبية من قبل الأخصائي
+    WritePrescription --> RateSession: تقييم الجلسة من قبل المريض
+    
+    session_end_actions --> RateSession: تقييم الجلسة مباشرة
+    
+    RateSession --> [*]: نهاية
+```

@@ -28,8 +28,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'L\'email est requis'],
     unique: true,
     lowercase: true,
-    trim: true,
-    match: [/^\S+@\S+\.\S+$/, 'Veuillez fournir un email valide']
+    trim: true
   },
   phone: {
     type: String,
@@ -39,7 +38,6 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Le mot de passe est requis'],
-    minlength: [8, 'Le mot de passe doit contenir au moins 8 caractères'],
     select: false // Don't return password by default
   },
   role: {
